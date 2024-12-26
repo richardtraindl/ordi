@@ -1,0 +1,184 @@
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-Regular.woff');
+}
+
+* { 
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    font-size: 16px; 
+    line-height: 18px;
+    font-family: 'Open Sans';
+}
+
+/* html { background-color: #EEE; padding: 0.7em; } */
+body { width: 80em; max-width: 98%; margin: 0 auto; padding: 0 0.5em; background-color: White; }
+h1, h1 a { margin: auto 0; padding: 0; font-size: 1.8em; }
+h2, h2 a { margin: auto 0; padding: 0; font-size: 1.5em; text-decoration: underline; }
+h3, h3 a { margin: auto 0; padding: 0; font-size: 1.3em; }
+p, label, input { margin: auto 0; padding: 0; }
+a { color: #377ba8; text-decoration: none; }
+
+#content-wrapper { background-color: #EEE; } /* padding: 0.5em;  */
+
+.flash { margin: 0.7em 0; padding: 0.5em; background-color: OrangeRed; border: 0.1em solid #377BA8; }
+
+header { 
+    background-color: Lightgray;
+    margin-top: 0.6em;
+    padding: 0 0.6em;
+    /* width: 100%; */
+    height: 1.8em;
+    display: grid; 
+    grid-template-columns: auto auto auto;
+    grid-auto-flow: row;
+    align-items: center;
+    vertical-align: middle;
+    justify-items: auto;
+}
+header p, header p a { font-size: 1em; line-height: 1.2em; text-align: right; }
+
+nav { 
+  background-color: Lightgray; 
+  /* width: 100%; */
+  margin-top: 0.6em; /*0.1em; */
+  padding: 0.6em; 
+}
+nav a, 
+nav a:link, 
+nav a:visited,
+nav a:active {
+    text-decoration: none;
+    font-size: 1em;
+}
+
+#content-wrapper { padding-left: 0.6em; }
+
+.row-grid { 
+    display: inline-grid; 
+    margin: 0; 
+    grid-auto-flow: row;
+    column-gap: 0.7em;
+    grid-row-gap: 0.4em;
+    align-items: center;
+    vertical-align: middle;
+    justify-items: start;
+}
+
+.flex-container {
+    display: flex; 
+    flex-direction: row; 
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.flex-container > div, .flex-container > p { margin-right: 1.3em; }
+
+form { margin: 0 }
+
+input[type=submit] { /* , input[type=reset] */
+  align-self: start; 
+  min-width: 2.5em;
+  cursor: pointer;
+  padding: 0.3em;
+  border-radius: 0.3em;
+  background-image: -moz-linear-gradient(-90deg, silver, white);
+  background-image: -webkit-linear-gradient(-90deg, rgb(238, 238, 238), rgb(204, 204, 204) ); /* , lightgrey, darkgrey);		/* silver, gray */
+  border: 0.1em solid rgb(153, 153, 153);
+  color: Black;
+}
+
+textarea {
+  width: 100%;
+  height: 8em;
+  box-sizing: border-box;
+  border: 0.1em solid #ccc;
+  border-radius: 0.3em;
+  background-color: #f8f8f8;
+  resize: none;
+}
+
+img {
+  display: block;
+}
+
+.liste, .records {
+    width: 100%;
+}
+.liste, .records, .liste th, .records th, .liste td, .records td { 
+  padding: 0.2em;
+  border-color: Gray;
+  border-style: solid; 
+  border-width: thin; 
+  border-collapse: collapse;
+  text-align: left;
+  empty-cells: show;
+}
+.liste tr:nth-child(even) { 
+  background-color: #EEEEEE;
+}
+.liste tr:nth-child(odd) { 
+  background-color: #FFFFFF; 
+}
+.liste td, .records td { 
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: GhostWhite;
+}
+
+.btn {
+  cursor: pointer;
+  padding: 0.2em;
+  border-radius: 0.4em;
+  background-image: -moz-linear-gradient(-90deg, silver, white);
+  background-image: -webkit-linear-gradient(-90deg, rgb(238, 238, 238), rgb(204, 204, 204) ); /* , lightgrey, darkgrey);		/* silver, gray */
+  border: 0.1em solid rgb(153, 153, 153);
+  color: Black;
+}
+.btn a { color: Black; text-decoration: none;}
+
+.btn-disabled {
+  padding: 0.1em;
+  border-radius: 0.4em;
+  background-image: linear-gradient(-90deg, silver, white);
+  border: 0.1em solid rgb(153, 153, 153);
+  color: Lightgray;
+}
+
+.liste-wrapper {
+  max-height: calc(100vh - 13.4em); 
+  overflow-y: scroll;
+}
+
+.action {
+  display: flex;
+  flex-direction: row; 
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+  height: 3em; 
+}
+.action > div, .action > p { margin-right: 1.3em; }
+
+.grayed { background-color: LightGray; color: Gray; }
+
+.delete { background-color: Yellow !important; }
+
+.small-gap {
+  padding-bottom: 0.6em;
+}
+
+.gap {
+  padding-bottom: 1.2em;
+}
+
+.huge-gap {
+  padding-bottom: 1.8em;
+}
+
+#neue_zeile input[type=text], #neue_zeile textarea, #neue_zeile select { 
+    display: none; 
+}
