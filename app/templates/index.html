@@ -1,0 +1,116 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+  Behandlungsverläufe
+{% endblock %}
+
+
+{% block content %}
+  <div class="small-gap"></div>
+
+  <form method="post" action="{{ url_for('behandlungsverlauf.index') }}">
+    <div class="flex-container">
+      <div>
+        <label for="jahr">Behandlungsjahr</label>
+
+        <input type="text" size="10" name="jahr" value="{{- jahr -}}">
+      </div>
+
+      <div>
+        <input type="submit" value="suchen">
+      </div>
+    </div>
+  </form>
+
+  <div class="small-gap"></div>
+
+  <table class="liste">
+    <tr>
+      <th width="2%">&nbsp;</th>
+
+      <th width="9.9%">Beh.Datum</th>
+
+      <th width="43.5%">Kunde</th>
+
+      <th width="44.6%">Patient</th>
+    </tr>
+  </table>
+
+  <div class="liste-wrapper">    
+    <table class="liste">
+    {%- for behverlauf in behandlungsverlaeufe -%}
+      <tr>
+        <td style="width: 2%; text-align: center">
+          <input type="radio" name="option" value="{{- behverlauf.Behandlungsverlauf.id -}}">
+        </td>
+
+        <td style="width: 10%">
+          <a target="_blank" href="{{ url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behverlauf.Behandlungsverlauf.id) }}">
+            {{- behverlauf.Behandlungsverlauf.datum|dt -}}
+          </a>
+        </td>
+
+        <td style="width: 44%">
+          <a target="_blank" href="{{ url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behverlauf.Behandlungsverlauf.id) }}">
+          {%- with person=behverlauf.Person -%}
+            {%- include '_liste_person.html'-%}
+          {%- endwith -%}  
+          </a>
+        </td>
+
+        <td style="width: 44%">
+          <a target="_blank" href="{{ url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behverlauf.Behandlungsverlauf.id) }}">
+          {%- with tier=behverlauf.Tier -%}
+            {%- include '_liste_tier.html' -%}
+          {%- endwith -%} 
+          </a>
+        </td>
+      </tr>
+    {%- endfor -%}
+    </table>
+  </div>
+
+  <div class="action">
+    <p><a class="btn" id="zum_behandlungsverlauf" href="#">zum Behandlungsverlauf</a></p>
+
+    <p><a class="btn" id="behandlungsverlauf_loeschen" href="#">Behandlungsverlauf löschen</a></p>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+
+        $('#zum_behandlungsverlauf').click(function(){ 
+            var id = $("input:radio[name=option]:checked").val(); 
+            if(id == null){
+                alert("Bitte eine Karteikarte auswählen!");
+            }
+            else{
+                //window.location = "/behandlungsverlauf/" + id.toString() + "/edit";
+                window.open("/behandlungsverlauf/" + id.toString() + "/edit", "_blank");
+            }
+            return false; 
+        });
+
+        $('#behandlungsverlauf_loeschen').click(function(){ 
+            var id = $("input:radio[name=option]:checked").val(); 
+            if(id == null){
+                alert("Bitte eine Karteikarte auswählen!");
+            }
+            else{
+                if(confirm("Soll der Datensatz gelöscht werden?")){
+                    window.location = "/behandlungsverlauf/" + id.toString() + "/delete";
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+            return false; 
+        });
+
+    });
+  </script>
+{% endblock %}
+

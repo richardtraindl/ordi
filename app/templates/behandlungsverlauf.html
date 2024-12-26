@@ -1,0 +1,95 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+  Behandlungsverlauf
+{% endblock %}
+
+
+{% block content %}
+    <div>
+      <div class="row-grid" style="grid-template-columns: auto auto;">
+        {% if behandlungsverlauf and behandlungsverlauf.id %}
+            {% with person=behandlungsverlauf.person %}
+              {% include 'patient/_person.html' %}
+            {% endwith %}
+
+            {% with tier=behandlungsverlauf.tier %}
+              {% include 'patient/_tier.html' %}
+            {% endwith %}
+        {% else %}
+              {% include 'patient/_person.html' %}
+              {% include 'patient/_tier.html' %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="small-gap"></div>
+
+    {% if behandlungsverlauf and behandlungsverlauf.id %}
+      <form method="post" action="{{ url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behandlungsverlauf.id) }}">
+    {% else %}
+      <form method="post" action="{{ url_for('behandlungsverlauf.create', id=id) }}">
+    {% endif %}
+    
+      <input type="hidden" name="behandlungsverlauf_id" id="behandlungsverlauf_id" value="{{- request.form['behandlungsverlauf_id'] or behandlungsverlauf.id -}}">
+
+      <div class="row-grid" style="grid-template-columns: auto auto;">
+        <label for="datum">Datum</label>
+        <input size="10" type="text" name="datum" id="datum" class="date change" value="{{- request.form['datum'] or behandlungsverlauf.datum|dt or datum -}}" required>
+
+        <label for="diagnose">Diagnose</label>
+        <input size="40" type="text" name="diagnose" id="diagnose" class="change" value="{{- request.form['diagnose'] or behandlungsverlauf.diagnose|sn -}}" required>
+
+        <label style="align-items: top;" for="behandlung">Behandlung</label>
+        <textarea maxlength="1024" style="width: 640px; height: calc(100vh - 31.2em);" name="behandlung" id="behandlung" class="change" required>{{- request.form['behandlung'] or behandlungsverlauf.behandlung|sn -}}</textarea>
+      </div>
+
+      <div class="small-gap"></div>
+
+      <div class="flex-container">
+
+        <p><input type="submit" value="Behandlungsverlauf speichern"></p>
+
+      {% if changed == False %}
+        <p><a id="print" class="btn" href="#">Behandlungsverlauf drucken</a></p>
+      {% else %}
+        <p><a id="print" class="btn grayed" href="#">Behandlungsverlauf drucken</a></p>
+      {% endif %}
+      
+        <p class="btn"><a href="{{ url_for('patient.index') }}">Abbrechen</a></p>
+
+      </div>
+
+    </form>
+
+    <script>
+        $(document).ready(function(){
+
+            $.datepicker.setDefaults($.datepicker.regional["de"]);
+            $('.date').datepicker({ 
+                dateFormat: "dd.mm.yy",
+                changeMonth: true,
+                changeYear: true 
+            });
+
+            $('#diagnose').focus();
+
+            $('.change').on('input', function(){
+              $('#print').addClass('grayed');
+            });
+
+            $('#print').click(function(){ 
+              if($(this).hasClass('grayed') == false){
+                var behandlungsverlauf_id = $('#behandlungsverlauf_id').val();
+                window.location = "/behandlungsverlauf/" + behandlungsverlauf_id.toString() + "/download";
+              }
+              return false; 
+            });
+
+            hinweis_speichern();
+
+        });
+    </script>
+{% endblock %}
