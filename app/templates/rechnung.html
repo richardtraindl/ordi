@@ -1,0 +1,353 @@
+
+{% extends 'base.html' %}
+
+
+{% block title %}
+  Rechnung
+{% endblock %}
+
+
+{% block content %}
+  <div>
+    <div class="row-grid" style="grid-template-columns: auto auto;">
+      {% if rechnung and rechnung.id %}
+        {% with person=rechnung.person %}
+          {% include 'patient/_person.html' %}
+        {% endwith %}
+
+        {% with tier=rechnung.tier %}
+          {% include 'patient/_tier.html' %}
+        {% endwith %}
+      {% else %}
+          {% include 'patient/_person.html' %}
+          {% include 'patient/_tier.html' %}
+      {% endif %}      
+    </div>
+  </div>
+
+    <div class="gap"></div>
+
+  {% if rechnung and rechnung.id %}
+    <form method="post" action="{{ url_for('rechnung.edit', rechnung_id=rechnung.id) }}">
+  {% else %}
+    <form method="post" action="{{ url_for('rechnung.create', tierhaltung_id=tierhaltung_id) }}">
+  {% endif %}
+      <input type="hidden" name="rechnung_id" id="rechnung_id" value="{{- rechnung.id or '' -}}">
+
+      <div>
+        <div class="row-grid" style="grid-template-columns: auto auto auto auto;">
+            <label for="jahr">Rechnungsjahr</label>
+            <input type="text" size=3 name="jahr" id="jahr" class="change" value="{{- request.form['jahr'] or rechnung.jahr|sn -}}" required>
+
+            <label for="lfnr">Rechnungslfnr</label>
+            <input type="text" size=3 name="lfnr" id="lfnr" class="change" value="{{- request.form['lfnr'] or rechnung.lfnr|sn -}}" required>
+
+            <label for="datum">Ausstellungsdatum</label>
+            <input type="text" size=8 name="datum" id="datum" class="date change" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}" required>
+
+            <label for="ort">Ausstellungsort</label>
+            <input type="text" size=10 name="ort" id="ort" class="change" value="{{- request.form['ort'] or rechnung.ort or ort -}}" required>
+        </div>
+      </div>
+      
+      <div class="small-gap"></div>
+          
+      <div>
+        <div class="row-grid" style="grid-template-columns: auto auto;">
+            <label for="diagnose">Diagnose</label>
+            <textarea style="width: 480px; height: 42px" name="diagnose" id="diagnose" class="change">{{- request.form['diagnose'] or rechnung.diagnose|sn -}}</textarea>
+
+            <label for="bezahlung">Bezahlung</label>
+            <input type="text" size=30 name="bezahlung" id="bezahlung" class="change" value="{{- request.form['bezahlung'] or rechnung.bezahlung|sn -}}">
+        </div>
+      <div>
+
+      <div class="gap"></div>
+
+      <table class="records">
+        <tr>
+          <th style="width: 10%">Datum</th>
+
+          <th style="width: 19.8%">Artikelart</th>
+
+          <th style="width: 53.6">Detail</th>
+
+          <th style="width: 7.6%">Betrag</th>
+
+          <th style="width: 9%">&nbsp;</th>
+        </tr>
+      </table>
+
+      <div id="scroller" style="max-height: calc(100vh - 39em); overflow-y: scroll; overflow-x: hidden;">
+        <table class="records">
+          <tbody>
+          {% set editerror = 0 %}
+          {% for rz in rechnungszeilen %}
+            <tr>
+            {% if rz.id %}
+              <td style="width: 10%">
+                <input type="hidden" name="rechnungszeile_id[]" value="{{- rz.id -}}" disabled>
+
+                <input type="hidden" name="touched[]" value="0" disabled>
+
+                <input type="text" style="width: 100%" name="datum[]" class="date change" value="{{- rz.datum|dt -}}" disabled>
+              </td>
+
+              {% set artikelcode = rz.artikelcode %}
+              {% set active = False %}
+              <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
+              
+              <td style="width: 54%"><textarea maxlength="60" style="width: 100%; height: 42px;" name="artikel[]" class="change" disabled>{{- rz.artikel -}}</textarea></td>
+              
+              <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change" disabled>{{- rz.betrag|sn|currency -}}</textarea></td>
+            
+              <td style="width: 8%">
+                <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
+
+                <p><a href="#" onclick="delrow($(this));">löschen</a></p>
+              </td>
+            {% else %}
+              {% set editerror = editerror + 1 %}
+
+              <td style="width: 10%">
+                <input type="hidden" name="rechnungszeile_id[]" value="{{- rz['rechnungszeile_id'] -}}">
+                <input type="hidden" name="touched[]" value="1">
+                <input type="text" style="width: 100%" name="datum[]" class="date change" value="{{- rz['datum']|sn -}}">
+              </td>
+
+              {% set artikelcode = rz['artikelcode'] %}
+              {% set active = True %}
+              <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
+
+              {% if editerror == 1 %}
+                <td style="width: 54%"><textarea maxlength="60" style="width: 100%; height: 42px;" name="artikel[]" class="change" id="edit">{{- rz['artikel']|sn -}}</textarea></td>
+              {% else %}
+                <td style="width: 54%"><textarea maxlength="60" style="width: 100%; height: 42px;" name="artikel[]" class="change">{{- rz['artikel']|sn -}}</textarea></td>
+              {% endif %}
+
+              <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change">{{- rz['betrag']|sn -}}</textarea></td>
+
+              <td style="width: 8%">
+                <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern rückgängig</a></p>
+
+                <p><a href="#" onclick="delrow($(this));">löschen</a></p>
+              </td>
+            {% endif %}
+            </tr>
+          {% endfor %}
+
+            <tr id="neue_zeile">
+              <td style="width: 10%">
+                <input type="hidden" name="rechnungszeile_id[]" value="">
+                <input type="hidden" name="touched[]" value="0">
+              {% if editerror == 0 %}
+                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}">
+              {% else %}
+                <input type="text" style="width: 100%" name="datum[]" class="date" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}">
+              {% endif %}
+              </td>
+
+              {% set artikelcode = 0 %}
+              {% set active = True %}
+              <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
+
+              <td style="width: 54%"><textarea style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
+
+              <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
+
+              <td style="width: 8%"><a href="#" onclick="newrow($(this));">neue Zeile</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="small-gap"></div>
+
+      <div class="flex-container">
+        
+        <p><input type="submit" value="Rechnung speichern"></p>
+        
+      {% if rechnung and rechnung.id %}
+        <p><a id="als_neue_rechnung" class="btn" href="#">als neue Rechnung übernehmen</a></p>
+
+        <p><a id="print" class="btn" href="#">Rechnung drucken</a></p>
+      {% else %}
+        <p><a  id="als_neue_rechnung" class="btn grayed" href="#">als neue Rechnung übernehmen</a></p>
+
+        <p><a id="print" class="btn grayed" href="#">Rechnung drucken</a></p>
+      {% endif %}
+
+        <p class="btn"><a href="{{ url_for('patient.index') }}">Abbrechen</a></p>
+
+      </div>
+
+    </form>
+
+    <script>
+
+      function newrow($obj){
+        $obj.text("");
+        $obj.attr("onclick", "delete_newrow($(this));");
+        $obj.closest("tr").removeAttr("id");
+
+        var date = new Date();
+        var year = String(date.getFullYear());
+        var month = String(date.getMonth() + 1);
+        if(month.length == 1){
+          month = "0" + month;
+        }
+        var day = String(date.getDate());
+        if(day.length == 1){
+          day = "0" + day;
+        }
+
+        $obj.closest("tbody").append(
+            '<tr id="neue_zeile">' +
+              '<td style="width: 10%">' + 
+                '<input type="hidden" name="rechnungszeile_id[]" value="">' +
+                '<input type="hidden" name="touched[]" value="1">' +
+                '<input type="text" style="width: 100%" name="datum[]" class="date" value="' + day + "." + month + "." + year + '">' + 
+              '</td>' + 
+              '<td style="width: 20%">' + 
+                '<select name="artikelcode[]">' +
+                    '<option value="0" selected>&nbsp;</option>' +
+                    '<option value="1">Visite</option>' +
+                    '<option value="2">Labor</option>' +
+                    '<option value="3">Injektion</option>' +
+                    '<option value="4">Röntgen</option>' +
+                    '<option value="5">Ultraschall</option>' +
+                    '<option value="6">Medikamente</option>' +
+                    '<option value="7">Futter und Medikamente</option>' +
+                    '<option value="8">Artikel mit 20%</option>' +
+                    '<option value="9">Artikel mit 13%</option>' +
+                    '<option value="10">Artikel mit 10%</option>' +
+                '</select>' +
+              '</td>' +
+              '<td style="width: 54%">' + 
+                '<textarea style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea>' + 
+              '</td>' + 
+              '<td style="width: 8%">' +
+                '<textarea style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea>' + 
+              '</td>' + 
+              '<td style="width: 8%">' + 
+                '<a href="#" onclick="newrow($(this));">neue Zeile</a>' + 
+              '</td>' +
+            '</tr>'
+        );
+      }
+
+      function editrow($obj){ 
+        var row = $obj.closest("tr");
+
+        var touched = row.find("input[name='touched[]']").val();
+        if(touched == 0){
+          row.find("textarea").removeAttr("disabled");
+          row.find("input").removeAttr("disabled");
+          row.find("select").removeAttr("disabled");
+          row.find("input[name='touched[]']").val(1);
+          $obj.text("ändern rückgängig");
+          $('#als_neue_rechnung').addClass('grayed');
+          $('#print').addClass('grayed');
+        }
+        if(touched == 1){
+          var rechnungszeile_id = row.find("input[name='rechnungszeile_id[]']").val();
+          if(rechnungszeile_id != null){
+            var url = "/rechnung/" + rechnungszeile_id.toString() + "/async_read_rechnungszeile"
+            $.get(url, function(data){
+              $.each(data, function(key, value){
+                if(key == "datum"){
+                  row.find("input[name='datum[]']").val(value);
+                }
+                else if(key == "artikelcode"){
+                  row.find("select[name='artikelcode[]']").val(value);
+                }
+                else if(key == "artikel"){
+                  row.find("textarea[name='artikel[]']").val(value);
+                }
+                else if(key == "betrag"){
+                    row.find("textarea[name='betrag[]']").val(value);
+                }
+              });
+            });
+          }
+
+          row.find("textarea").attr("disabled", "disabled");
+          row.find("input").attr("disabled", "disabled");
+          row.find("select").attr("disabled", "disabled");
+          row.find("input[name='touched[]']").val(0);
+          $obj.text("ändern");
+          $('#als_neue_rechnung').addClass('grayed');
+          $('#print').addClass('grayed');
+        }
+        return false; 
+      }
+
+      function delrow($obj){
+        var row = $obj.closest("tr");
+
+        row.find("td").addClass('delete');
+
+        if(confirm("Zeile Löschen?")){
+          var rechnungszeile_id = row.find("input[name='rechnungszeile_id[]']").val();
+          if(rechnungszeile_id != null){
+            var url = "/rechnung/" + rechnungszeile_id.toString() + "/async_delete_rechnungszeile"
+            $.get(url, function(data){
+              if(data.length > 0){
+                row.remove();
+              }
+            });
+          }
+        }
+        else{
+          row.find("td").removeClass('delete');
+        }
+        return false
+      }
+
+      $(document).ready(function(){
+
+          $.datepicker.setDefaults($.datepicker.regional["de"]);
+          $('.date').datepicker({ 
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function(){
+              $('#als_neue_rechnung').addClass('grayed');
+              $('#print').addClass('grayed');
+            }
+          });
+
+          $('#edit').focus();
+
+          var element = document.getElementById("scroller");
+          element.scrollTop = element.scrollHeight;
+
+          $('.change').on('input', function(){
+            $('#als_neue_rechnung').addClass('grayed');
+            $('#print').addClass('grayed');
+            return false; 
+          });
+
+          $('#als_neue_rechnung').click(function(){ 
+            if($(this).hasClass('grayed') == false){
+              var rechnung_id = $("#rechnung_id").val();
+              if(rechnung_id != null){
+                window.location = "/rechnung/" + rechnung_id + "/create_from_rechnung";
+              }
+            }
+            return false; 
+          });
+
+          $('#print').click(function(){ 
+            if($(this).hasClass('grayed') == false){
+              var rechnung_id = $('#rechnung_id').val();
+              window.location = "/rechnung/" + rechnung_id.toString() + "/download";
+            }
+            return false; 
+          });
+
+          hinweis_speichern();
+
+        });
+    </script>
+{% endblock %}
