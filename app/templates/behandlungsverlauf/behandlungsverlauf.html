@@ -57,39 +57,37 @@
       {% else %}
         <p><a id="print" class="btn grayed" href="#">Behandlungsverlauf drucken</a></p>
       {% endif %}
-      
-        <p class="btn"><a href="{{ url_for('patient.index') }}">Abbrechen</a></p>
 
       </div>
 
     </form>
 
     <script>
-        $(document).ready(function(){
+      $(document).ready(function(){
 
-            $.datepicker.setDefaults($.datepicker.regional["de"]);
-            $('.date').datepicker({ 
-                dateFormat: "dd.mm.yy",
-                changeMonth: true,
-                changeYear: true 
-            });
-
-            $('#diagnose').focus();
-
-            $('.change').on('input', function(){
-              $('#print').addClass('grayed');
-            });
-
-            $('#print').click(function(){ 
-              if($(this).hasClass('grayed') == false){
-                var behandlungsverlauf_id = $('#behandlungsverlauf_id').val();
-                window.location = "/behandlungsverlauf/" + behandlungsverlauf_id.toString() + "/download";
-              }
-              return false; 
-            });
-
-            hinweis_speichern();
-
+        $.datepicker.setDefaults($.datepicker.regional["de"]);
+        $('.date').datepicker({ 
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true 
         });
+
+        $('#diagnose').focus();
+
+        $('.change').on('input', function(){
+          $('#print').addClass('grayed');
+        });
+
+        $('#print').click(function(){ 
+          if($(this).hasClass('grayed') == false){
+            var behandlungsverlauf_id = $('#behandlungsverlauf_id').val();
+            window.location = "/behandlungsverlauf/" + behandlungsverlauf_id.toString() + "/download";
+          }
+          return false; 
+        });
+
+        hinweis_speichern();
+
+      });
     </script>
 {% endblock %}

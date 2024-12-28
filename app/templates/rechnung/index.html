@@ -28,17 +28,17 @@
 
   <table class="liste">
     <tr>
-      <th width="2%">&nbsp;</th>
-
       <th width="6%">Jahr</th>
 
-      <th width="5.8%">Lfnr.</th>
+      <th width="6%">Lfnr.</th>
 
-      <th width="9.9%">Bto.Summe</th>
+      <th width="10%">Bto.Summe</th>
 
-      <th width="37.6%">Kunde</th>
+      <th width="36%">Kunde</th>
 
-      <th width="38.7%">Patient</th>
+      <th width="36%">Patient</th>
+
+      <th width="6%">löschen</th>
     </tr>
   </table>
 
@@ -46,8 +46,6 @@
     <table class="liste">
     {%- for rechnung in rechnungen -%}
       <tr>
-        <td width="2%" style="text-align: center"><input type="radio" name="option" value="{{- rechnung.Rechnung.id -}}"></td>
-
         <td width="6%"><a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.jahr -}}</a></td>
 
         <td width="6%"><a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.lfnr -}}</a></td>
@@ -56,7 +54,7 @@
         {{- rechnung.Rechnung.brutto_summe|currency -}}
         </a></td>
 
-        <td width="38%">
+        <td width="36%">
           <a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">
           {%- with person=rechnung.Person -%}
             {%- include '_liste_person.html' -%}
@@ -64,54 +62,35 @@
           </a>
         </td>
 
-        <td width="38%">
+        <td width="36%">
           <a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">
           {%- with tier=rechnung.Tier -%}
             {%- include '_liste_tier.html' -%}
           {%- endwith -%}
           </a>
         </td>
+        
+        <td width="6%">
+          <a id="{{ rechnung.Rechnung.id }}" class="rechnung_loeschen" href="#">löschen</a>
+        </td>
       </tr>
     {%- endfor -%}
     </table>
   </div>
 
-  <div class="action">
-    <p><a class="btn" id="zur_rechnung" href="#">zur Rechnung</a></p>
-
-    <p><a class="btn" id="rechnung_loeschen" href="#">Rechnung löschen</a></p>
-  </div>
-
   <script>
     $(document).ready(function(){
 
-        $('#zur_rechnung').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                window.location = "/rechnung/" + id.toString() + "/edit";
-            }
-            return false; 
-        });
+      $('.rechnung_loeschen').click(function(){ 
+        var id = $(this).attr('id'); 
+        console.log(id.toString());
 
-        $('#rechnung_loeschen').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                if(confirm("Soll der Datensatz gelöscht werden?")){
-                    window.location = "/rechnung/" + id.toString() + "/delete";
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }
-            return false; 
-        });
+        if(confirm("Soll der Datensatz gelöscht werden?")){
+          window.location = "/rechnung/" + id.toString() + "/delete";
+          return true;
+        }
+        return false;
+      });
 
     });
   </script>

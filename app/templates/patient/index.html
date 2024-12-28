@@ -50,23 +50,21 @@
 
   <table class="liste">
     <tr>
-      <th width="2%">&nbsp;</th>
+      <th width="43%">Kunde</th>
 
-      <th width="48.5%">Kunde</th>
+      <th width="43%">Patient</th>
 
-      <th width="49.5%">Patient</th>
+      <th width="8%">Aktionen</th>
+
+      <th width="6%">löschen</th>
     </tr>
   </table>
 
   <div class="liste-wrapper">
     <table class="liste">
     {%- for th in tierhaltungen -%}
-      <tr width="2%">
-        <td style="text-align: center">
-          <input type="radio" name="option" value="{{ th.Tierhaltung.id }}">
-        </td>
-
-        <td width="49%">
+      <tr>
+        <td width="43%">
           <a target="_blank" style="text-decoration: underline;" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
           {%- with person=th.Person -%}
             {%- include '_liste_person.html' -%}
@@ -74,12 +72,24 @@
           </a>
         </td>
 
-        <td width="49%">
+        <td width="43%">
           <a target="_blank" style="text-decoration: underline;" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
           {%- with tier=th.Tier -%}
             {%- include '_liste_tier.html' -%}
           {%- endwith -%}
           </a>
+        </td>
+
+        <td width="8%">
+          <a target="_blank" href="{{ url_for('rechnung.create', tierhaltung_id=th.Tierhaltung.id) }}">n. Rechnung</a><br>
+
+          <a target="_blank" href="{{ url_for('behandlungsverlauf.create', id=th.Tierhaltung.id) }}">n. Beh.Verlauf</a><br>
+
+          <a target="_blank" href="{{ url_for('patient.create_tier', id=th.Tierhaltung.id) }}">n. Tier</a>
+        </td>
+
+        <td width="6%">
+          <a id="{{ th.Tierhaltung.id }}" class="karteikarte_loeschen" href="#">löschen</a>
         </td>
       </tr>
     {%- endfor -%}
@@ -87,81 +97,21 @@
   </div>
 
   <div class="action">
-    <p><a class="btn" target="_blank" id="zur_karteikarte" href="#">zur Karteikarte</a></p>
-
     <p><a class="btn" target="_blank" href="{{ url_for('patient.create') }}">neue Karteikarte</a></p>
-
-    <p><a class="btn" target="_blank" id="neues_tier" href="#">neues Tier</a></p>
-
-    <p><a class="btn" target="_blank" id="neue_rechnung" href="#">neue Rechnung</a></p>
-
-    <p><a class="btn" target="_blank" id="neuer_behandlungsverlauf" href="#">neuer Behandlungsverlauf</a></p>
-
-    <p><a class="btn" id="karteikarte_loeschen" href="#">Karteikarte löschen</a></p>
   </div>
 
   <script>
     $(document).ready(function() {
 
-        $('#zur_karteikarte').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                //window.location = "/patient/" + id.toString() + "/show";
-                window.open("/patient/" + id.toString() + "/show", "_blank");
-            }
-            return false; 
-        });
-        $('#neues_tier').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                //window.location = "/patient/" + id.toString() + "/create_tier";
-                window.open("/patient/" + id.toString() + "/create_tier", "_blank");
-            }
-            return false; 
-        });
-        $('#karteikarte_loeschen').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                if(confirm("Soll der Datensatz gelöscht werden?")){
-                    window.location = "/patient/" + id.toString() + "/delete";
-                    return true;
-                }
-                else{
-                    return false;
-                }
-            }
-            return false; 
-        });
-        $('#neuer_behandlungsverlauf').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                //window.location = "/behandlungsverlauf/" + id.toString() + "/create";
-                window.open("/behandlungsverlauf/" + id.toString() + "/create", "_blank");
-            }
-            return false; 
-        });
-        $('#neue_rechnung').click(function(){ 
-            var id = $("input:radio[name=option]:checked").val(); 
-            if(id == null){
-                alert("Bitte eine Karteikarte auswählen!");
-            }
-            else{
-                //window.location = "/rechnung/" + id.toString() + "/create";
-                window.open("/rechnung/" + id.toString() + "/create", "_blank");
-            }
-            return false; 
+        $('.karteikarte_loeschen').click(function(){ 
+          var id = $(this).attr('id'); 
+          console.log(id.toString());
+
+          if(confirm("Soll der Datensatz gelöscht werden?")){
+            window.location = "/patient/" + id.toString() + "/delete";
+            return true;
+          }
+          return false;
         });
 
     });

@@ -18,23 +18,28 @@
         <div class="small-gap"></div>
 
         <div class="flex-container">
-            <div><input type="submit" value="Speichern"></div>
-            <p class="btn"><a href="{{ url_for('patient.index') }}">Abbrechen</a></p>
-            
-            {% if ref %}
-              <p>{{ ref }}</p>
-            {% endif %}
+          <p><input type="submit" value="Speichern"></p>
+
+          <p class="btn"><a href="#" onClick="closeCurrent()">Abbrechen</a></p>
         </div>
     </form>
 
     <script>
-        $(document).ready(function(){
-            $.datepicker.setDefaults($.datepicker.regional["de"]);
-            $(".date").datepicker({ 
-                dateFormat: "dd.mm.yy",
-                changeMonth: true,
-                changeYear: true
-            });
+      function closeCurrent(){
+         if(confirm('Abbrechen?')){
+          window.close();
+        }
+      }
+
+      $(document).ready(function(){
+
+        $.datepicker.setDefaults($.datepicker.regional["de"]);
+        $(".date").datepicker({ 
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true
         });
+
+      });
     </script>
 {% endblock %}

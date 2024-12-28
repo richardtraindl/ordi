@@ -25,19 +25,19 @@
     <div class="gap"></div>
 
     <table class="records">
-        <thead>
-            <tr>
-                <th style="width: 8%">Datum</th>
-                <th style="width: 29.6%">Diagnose</th>
-                <th style="width: 10.9">Laborwerte</th>
-                <th style="width: 10.9%">Laborwerte*</th>
-                <th style="width: 13.8%">Arzneien</th>
-                <th style="width: 6.9%">AM</th>
-                <th style="width: 8.9%">Impfungen</th>
-                <th style="width: 4.9%">Kg</th>
-                <th style="width: 6.1%">&nbsp;</th>
-            </tr>
-        </thead>
+      <thead>
+        <tr>
+          <th style="width: 8%">Datum</th>
+          <th style="width: 30%">Diagnose</th>
+          <th style="width: 11%">Laborwerte</th>
+          <th style="width: 11%">Laborwerte*</th>
+          <th style="width: 14%">Arzneien</th>
+          <th style="width: 7%">AM</th>
+          <th style="width: 9%">Impfungen</th>
+          <th style="width: 5%">Kg</th>
+          <th style="width: 6%">&nbsp;</th>
+        </tr>
+      </thead>
     </table>
 
     <form method="post" action="{{ url_for('patient.save_behandlungen', id=tierhaltung.id) }}">
@@ -76,7 +76,7 @@
 
               <td style="width: 5%"><textarea name="gewicht[]" disabled>{{- behandlung.gewicht|sn -}}</textarea></td>
 
-              <td style="width: 5%">
+              <td style="width: 6%">
                 <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
 
                 <p><a href="#" onclick="delrow($(this));">löschen</a></p>
@@ -107,10 +107,10 @@
 
                 <td style="width: 5%"><textarea name="gewicht[]">{{- behandlung['gewicht'] -}}</textarea></td>
 
-                <td style="width: 5%">
+                <td style="width: 6%">
                   <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern rückgängig</a></p>
 
-                  <p><a href="#" onclick="delrow($(this));">löschen</a></p>  
+                  <p><a href="#" onclick="delrow($(this));">löschen</a></p>
                 </td>
             {%- endif -%}
             </tr>
@@ -137,7 +137,7 @@
 
               <td style="width: 5%"><textarea name="gewicht[]"></textarea></td>
 
-              <td style="width: 5%">&nbsp;</td>
+              <td style="width: 6%">&nbsp;</td>
             </tr>
           {%- endif -%}
 
@@ -200,7 +200,7 @@
         else{
           var behandlung_id = row.find("input[name='behandlung_id[]']").val();
           if(behandlung_id != null){
-            var url = "/" + behandlung_id.toString() + "/async_read_behandlung"
+            var url = "/patient/" + behandlung_id.toString() + "/async_read_behandlung";
             $.get(url, function(data){
               $.each(data, function(key, value){
                 if(key == "datum"){
@@ -213,19 +213,19 @@
                   row.find("textarea[name='diagnose[]']").val(value);
                 }
                 else if(key == "laborwerte1"){
-                    row.find("textarea[name='laborwerte1[]']").val(value);
+                  row.find("textarea[name='laborwerte1[]']").val(value);
                 }
                 else if(key == "laborwerte2"){
-                    row.find("textarea[name='laborwerte2[]']").val(value);
+                  row.find("textarea[name='laborwerte2[]']").val(value);
                 }
                 else if(key == "arzneien"){
-                    row.find("textarea[name='arzneien[]']").val(value);
+                  row.find("textarea[name='arzneien[]']").val(value);
                 }
                 else if(key == "arzneimittel"){
-                    row.find("textarea[name='arzneimittel[]']").val(value);
+                  row.find("textarea[name='arzneimittel[]']").val(value);
                 }
                 else if(key == "impfungen"){
-                    row.find("textarea[name='impfungen[]']").val(value);
+                  row.find("textarea[name='impfungen[]']").val(value);
                 }
               });
             });
@@ -244,8 +244,9 @@
 
         if(confirm("Zeile Löschen?")){
           var behandlung_id = row.find("input[name='behandlung_id[]']").val();
+
           if(behandlung_id != null){
-            var url = "/" + behandlung_id.toString() + "/async_delete_behandlung"
+            var url = "/patient/" + behandlung_id.toString() + "/async_delete_behandlung";
             $.get(url, function(data){
               if(data.length > 0){
                 row.remove();
@@ -256,7 +257,7 @@
         else{
           row.find("td").removeClass('delete');
         }
-        return false
+        return false;
       }
 
       $(document).ready(function(){
@@ -280,21 +281,21 @@
             title: 'Laborwerte',
             modal: true,
             buttons: [{ text: "OK", click: function(){
-                            labor_text_feld.value = labor_text_feld.value + get_laborreferenzen_text() + '**';
-                            labor_text_feld.focus(); 
-                            $(this).dialog("close");} 
-                      },
-                      {text: "Abbruch", click: function(){
-                            labor_text_feld.focus();
-                            $(this).dialog("close");} 
-                      }] 
+                labor_text_feld.value = labor_text_feld.value + get_laborreferenzen_text() + '**';
+                labor_text_feld.focus(); 
+                $(this).dialog("close");} 
+              },
+              {text: "Abbruch", click: function(){
+                labor_text_feld.focus();
+                $(this).dialog("close");} 
+              }] 
         });
 
         $('.labor').click(function(){
             labor_text_feld = this;
             var body = "<select id='dialog-laborreferenzen' style='height: 240px' multiple>"
             $('#laborreferenzen option').each(function( index ) {
-                body += "<option value='" + $( this ).text() + "'>" +  $( this ).text() + "</option>";
+              body += "<option value='" + $( this ).text() + "'>" +  $( this ).text() + "</option>";
             });
             body += "</select>";
             $dialog_labor.html(body);
@@ -328,15 +329,15 @@
               var impfungswert = $( this ).text();
               var isequal = false;
               $.each(impfungen, function(index, value){
-                    if(value == impfungswert){
-                          isequal = true;
-                    }
+                if(value == impfungswert){
+                  isequal = true;
+                }
               });
               if(isequal){
-                    body += "<option value='" + $( this ).text() + "' selected>" +  $( this ).text() + "</option>";
+                body += "<option value='" + $( this ).text() + "' selected>" +  $( this ).text() + "</option>";
               }
               else{
-                    body += "<option value='" + $( this ).text() + "'>" +  $( this ).text() + "</option>";
+                body += "<option value='" + $( this ).text() + "'>" +  $( this ).text() + "</option>";
               }
             });
             body += "</select>";
@@ -350,5 +351,7 @@
         hinweis_speichern();
 
       });
+
     </script>
+
 {%- endblock -%}

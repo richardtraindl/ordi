@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='all.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='jquery-ui-1.12.1.min.css') }}">
-    
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
     {%- if page_title != "Kalender" -%}
       <script src="{{ url_for('static', filename='hinweis_speichern.js') }}"></script>
     {%- endif -%}

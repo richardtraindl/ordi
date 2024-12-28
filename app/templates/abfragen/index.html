@@ -74,11 +74,9 @@
 
     <table class="liste">
       <tr>
-        <th width="2%">&nbsp;</th>
+        <th width="50%">Kunde</th>
 
-        <th width="48.5%">Kunde</th>
-
-        <th width="49.5%">Patient</th>
+        <th width="50%">Patient</th>
       </tr>
     </table>
 
@@ -86,20 +84,16 @@
       <table class="liste">
       {%- for th in tierhaltungen -%}
         <tr>
-          <td style="width: 2%; text-align: center">
-            <input type="radio" name="option" value="{{ th.Tierhaltung.id }}">
-          </td>
-
-          <td style="width: 49%">
-            <a href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
+          <td style="width: 50%">
+            <a target="_blank" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
             {%- with person=th.Person -%}
               {%- include '_liste_person.html' -%}
             {%- endwith -%}  
             </a>
           </td>
 
-          <td style="width: 49%">
-            <a href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
+          <td style="width: 50%">
+            <a target="_blank" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
             {%- with tier=th.Tier -%}
               {%- include '_liste_tier.html' -%}
             {%- endwith -%} 
@@ -111,8 +105,6 @@
   </div>
 
   <div class="action">
-    <p><a class="btn" id="zur-karteikarte" href="#">zur Karteikarte</a></p>
-
     <p><a class="btn" id="bericht-drucken" href="#">Bericht drucken</a></p>
 
     {%- if abfrage == "Impfung" and tierhaltungen -%}
@@ -160,17 +152,6 @@
 
 
     $(document).ready(function(){
-      $('#zur-karteikarte').click(function(){ 
-        var id = $("input:radio[name=option]:checked").val(); 
-        if(id == null){
-          alert("Bitte eine Karteikarte auswählen!");
-        }
-        else{
-          window.location = "/" + id.toString() + "/show";
-        }
-        return false; 
-      });
-
       $('#bericht-drucken').click(function(){ 
         var abfrage = $("select option:selected").text();
         if(abfrage.length > 0){

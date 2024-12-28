@@ -68,13 +68,13 @@
         <tr>
           <th style="width: 10%">Datum</th>
 
-          <th style="width: 19.8%">Artikelart</th>
+          <th style="width: 20%">Artikelart</th>
 
-          <th style="width: 53.6">Detail</th>
+          <th style="width: 54%">Detail</th>
 
-          <th style="width: 7.6%">Betrag</th>
+          <th style="width: 8%">Betrag</th>
 
-          <th style="width: 9%">&nbsp;</th>
+          <th style="width: 8%">&nbsp;</th>
         </tr>
       </table>
 
@@ -168,16 +168,14 @@
         <p><input type="submit" value="Rechnung speichern"></p>
         
       {% if rechnung and rechnung.id %}
-        <p><a id="als_neue_rechnung" class="btn" href="#">als neue Rechnung übernehmen</a></p>
-
         <p><a id="print" class="btn" href="#">Rechnung drucken</a></p>
+
+        <p><a id="als_neue_rechnung" class="btn" href="#">neue Rechnung</a></p>
       {% else %}
-        <p><a  id="als_neue_rechnung" class="btn grayed" href="#">als neue Rechnung übernehmen</a></p>
-
         <p><a id="print" class="btn grayed" href="#">Rechnung drucken</a></p>
-      {% endif %}
 
-        <p class="btn"><a href="{{ url_for('patient.index') }}">Abbrechen</a></p>
+        <p><a  id="als_neue_rechnung" class="btn grayed" href="#">neue Rechnung</a></p>
+      {% endif %}
 
       </div>
 
