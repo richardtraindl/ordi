@@ -136,6 +136,7 @@ def show(id=id):
     behandlungen = db.session.query(Behandlung) \
         .filter(Behandlung.tier_id == tierhaltung.tier.id) \
         .order_by(Behandlung.datum.asc()).all()
+    
     datum = datetime.today()
     datum_ende = datum + timedelta(days=7)
 
@@ -261,11 +262,13 @@ def save_or_delete_impfungen(behandlung, impfungstexte):
             print("severe error")
             cursor.close()
             return False
+
         found = False
         for impfung in behandlung.impfungen:
             if(impfungscode == impfung.impfungscode):
                 found = True
                 break
+
         if(found == False):
             new_impfung = Impfung(behandlung_id=behandlung.id, impfungscode=impfungscode)
             db.session.add(new_impfung)
@@ -297,75 +300,85 @@ def save_behandlungen(id):
 
         datum=datetime.today()
 
+        errorbehandlungen = []
+        errors = []
+
         reqbehandlungen = build_behandlungen(request)
         for reqbehandlung in reqbehandlungen:
-            behandlung = None
-            behandlung_id = None
-            if(len(reqbehandlung['behandlung_id']) > 0):
-                try:
-                    behandlung_id = int(reqbehandlung['behandlung_id'])
-                    behandlung = db.session.query(Behandlung).get(behandlung_id)
-                except:
-                    behandlung_id = None
-                    behandlung = None
-
-            behandlung, str_impfungen, error = fill_and_validate_behandlung(behandlung, reqbehandlung)
-            if(len(error) > 0):
-                flash(error)
-
-                #####################
-                # Bahndlungen aus Datenbank mit jenen des Request mergen
-                mergedbehandlungen = []
-
-                for behandlung in behandlungen:
-                    found = False
-                    for reqbehandlung in reqbehandlungen:
-                        if(len(reqbehandlung['behandlung_id']) > 0):
-                            try:
-                                behandlung_id = int(reqbehandlung['behandlung_id'])
-                            except:
-                                continue
-                            if(behandlung.id == behandlung_id):
-                                mergedbehandlungen.append(reqbehandlung)
-                                found = True
-                                break
-                    if(found == False):
-                        mergedbehandlungen.append(behandlung)
-
-                for reqbehandlung in reqbehandlungen:
-                    if(len(reqbehandlung['behandlung_id']) == 0):
-                        mergedbehandlungen.append(reqbehandlung)
-                #####################
-
-                anredewerte = []
-                for key, value in ANREDE.items():
-                    anredewerte.append([key, value])
-
-                geschlechtswerte = []
-                for key, value in GESCHLECHT.items():
-                    geschlechtswerte.append([key, value])
-
-                laborreferenzen = []
-                for referenz in LABOR_REFERENZ:
-                    laborreferenzen.append(referenz)
-
-                impfungswerte = []
-                for key, value in IMPFUNG.items():
-                    impfungswerte.append([key, value])
-
-                return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=mergedbehandlungen, 
-                            datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte, laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, page_title="Karteikarte")
-
-            if(behandlung.id == None):
-                behandlung.tier_id = tierhaltung.tier_id
-                db.session.add(behandlung)
-            db.session.commit()
-
-            if(len(str_impfungen) > 0):
-                impfungstexte = str_impfungen.split(',')
+            behandlung, str_impfungen, error = fill_and_validate_behandlung(reqbehandlung)
+            if(error):
+                errors.append(error)
+                errorbehandlungen.append(reqbehandlung)
             else:
-                impfungstexte = []
-            save_or_delete_impfungen(behandlung, impfungstexte)
+                if(behandlung.id == None):
+                    behandlung.tier_id = tierhaltung.tier_id
+                    db.session.add(behandlung)
+                    db.session.commit()
+
+                    if(len(str_impfungen) > 0):
+                        impfungstexte = str_impfungen.split(',')
+                    else:
+                        impfungstexte = []
+                    save_or_delete_impfungen(behandlung, impfungstexte)
+                else:
+                    dbbehandlung = db.session.query(Behandlung).get(behandlung.id)
+                    dbbehandlung.datum=behandlung.datum
+                    dbbehandlung.gewicht=behandlung.gewicht
+                    dbbehandlung.diagnose=behandlung.diagnose
+                    dbbehandlung.laborwerte1=behandlung.laborwerte1 
+                    dbbehandlung.laborwerte2=behandlung.laborwerte2
+                    dbbehandlung.arzneien=behandlung.arzneien
+                    dbbehandlung.arzneimittel=behandlung.arzneimittel
+                    db.session.commit()
+
+                    if(len(str_impfungen) > 0):
+                        impfungstexte = str_impfungen.split(',')
+                    else:
+                        impfungstexte = []
+                    save_or_delete_impfungen(dbbehandlung, impfungstexte)
+
+        # Neu lesen nach Speichern
+        neuebehandlungen = db.session.query(Behandlung) \
+                        .filter(Behandlung.tier_id == tierhaltung.tier.id) \
+                        .order_by(Behandlung.datum.asc()).all()
+
+        # Bestehende Datensätze mit fehlerhaften Request Datensätzen ergänzen (austauschen oder aufnehmen)
+        for errorbehandlung in errorbehandlungen:
+            if(len(errorbehandlung['behandlung_id']) > 0):
+                try:
+                    behandlung_id = int(errorbehandlung['behandlung_id'])
+                except:
+                    continue
+                
+                for idx in range(len(neuebehandlungen)):
+                    if(not isinstance(neuebehandlungen[idx], dict)):
+                        if(neuebehandlungen[idx].id == behandlung_id):
+                            neuebehandlungen[idx] = errorbehandlung
+            else:
+                neuebehandlungen.append(errorbehandlung)
+
+        if(len(errors) > 0):
+            flash(errors[-1])
+
+            anredewerte = []
+            for key, value in ANREDE.items():
+                anredewerte.append([key, value])
+
+            geschlechtswerte = []
+            for key, value in GESCHLECHT.items():
+                geschlechtswerte.append([key, value])
+
+            laborreferenzen = []
+            for referenz in LABOR_REFERENZ:
+                laborreferenzen.append(referenz)
+
+            impfungswerte = []
+            for key, value in IMPFUNG.items():
+                impfungswerte.append([key, value])
+
+            return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=neuebehandlungen, 
+                      datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
+                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=error, page_title="Karteikarte")
 
     return redirect(url_for('patient.show', id=id))
 

@@ -9,28 +9,19 @@
 
 {% block content %}
     <form method="post">
-        <!--div class="twocols" !-->
-        <div class="row-grid" style="grid-template-columns: auto auto;">
-            {% include 'patient/_form_for_person.html' %}
-            {% include 'patient/_form_for_tier.html' %}
-        </div>
+      <div class="row-grid" style="grid-template-columns: auto auto;">
+        {% include 'patient/_form_for_person.html' %}
+        {% include 'patient/_form_for_tier.html' %}
+      </div>
 
-        <div class="small-gap"></div>
+      <div class="small-gap"></div>
 
-        <div class="flex-container">
-          <p><input type="submit" value="Speichern"></p>
-
-          <p class="btn"><a href="#" onClick="closeCurrent()">Abbrechen</a></p>
-        </div>
+      <div class="flex-container">
+        <p><input type="submit" value="Speichern"></p>
+      </div>
     </form>
 
     <script>
-      function closeCurrent(){
-         if(confirm('Abbrechen?')){
-          window.close();
-        }
-      }
-
       $(document).ready(function(){
 
         $.datepicker.setDefaults($.datepicker.regional["de"]);

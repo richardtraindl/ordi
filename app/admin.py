@@ -1,7 +1,7 @@
 
 import os
 from datetime import datetime, date
-import gdown
+#import gdown
 
 from flask import Flask, Blueprint, flash, g, redirect, render_template, request, url_for
 import click
@@ -376,7 +376,8 @@ def import_kontakt(filename):
         arrline = newline.split(";")
 
         if(len(arrline) != 5):
-            print(str(index) + " " + newline + " # " + line, end="error1", flush=True)
+            print(line, end="*\n", flush=True)
+            print("index: " + str(index) + "line: " + line + "newline: " + newline, end=" error1\n", flush=True)
             continue
 
         if(len(arrline[3]) == 0):

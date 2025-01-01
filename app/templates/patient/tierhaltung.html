@@ -44,82 +44,63 @@
       <div id="scroller" style="max-height: calc(100vh - 31.5em); overflow-y: scroll; overflow-x: hidden;">
         <table class="records">
           <tbody>
-          {%- set ns = namespace(editerror=0) -%}
-
           {%- for behandlung in behandlungen -%}
+            {%- if behandlung|isdict -%}
+              {% set active = '' %}
+            {% else %}
+              {% set active = 'disabled' %}
+            {% endif %}
             <tr>
-            {%- if behandlung and behandlung.id -%}
-              <input type="hidden" name="behandlung_id[]" value="{{- behandlung.id -}}" disabled>
-
               <td style="width: 8%">
-                <input type="text" name="datum[]" class="date" value="{{- behandlung.datum|dt -}}" disabled>
+                 <input type="hidden" name="behandlung_id[]" value="{{- behandlung['behandlung_id'] or behandlung.id -}}" {{ active }}>
+                <input type="hidden" name="tier_id[]" value="{{- behandlung['tier_id'] or tierhaltung.tier_id -}}" {{ active }}>
+
+                <input type="text" name="datum[]" class="date" value="{{- behandlung['datum']|dt or behandlung.datum|dt -}}" {{ active }}>
               </td>
 
-              <td style="width: 30%"><textarea name="diagnose[]" disabled>{{- behandlung.diagnose -}}</textarea></td>
+              <td style="width: 30%"><textarea name="diagnose[]" {{ active }}>{{- behandlung['diagnose'] or behandlung.diagnose -}}</textarea></td>
 
-              <td style="width: 11%"><textarea name="laborwerte1[]" class="labor" disabled>{{- behandlung.laborwerte1 -}}</textarea></td>
+              <td style="width: 11%">
+                <textarea name="laborwerte1[]" class="labor" {{ active }}>{{- behandlung['laborwerte1'] or behandlung.laborwerte1 -}}</textarea>
+              </td>
 
-              <td style="width: 11%"><textarea name="laborwerte2[]" class="labor" disabled>{{- behandlung.laborwerte2 -}}</textarea></td>
+              <td style="width: 11%">
+                <textarea name="laborwerte2[]" class="labor" {{ active }}>{{- behandlung['laborwerte2'] or behandlung.laborwerte2 -}}</textarea>
+              </td>
 
-              <td style="width: 14%"><textarea name="arzneien[]" disabled>{{- behandlung.arzneien -}}</textarea></td>
+              <td style="width: 14%"><textarea name="arzneien[]" {{ active }}>{{- behandlung['arzneien'] or behandlung.arzneien -}}</textarea></td>
 
-              <td style="width: 7%"><textarea name="arzneimittel[]" disabled>{{- behandlung.arzneimittel -}}</textarea></td>
+              <td style="width: 7%"><textarea name="arzneimittel[]" {{ active }}>{{- behandlung['arzneimittel'] or behandlung.arzneimittel -}}</textarea></td>
 
               <td style="width: 9%">
-                <textarea name="impfungen[]" class="impfungen" readonly disabled>
-                {%- for impfung in behandlung.impfungen -%}
-                  {%- if loop.index > 1 %},{%- endif -%}
-                  {{- impfung.impfungscode|mapimpfung -}}
-                {%- endfor -%}
+                <textarea name="impfungen[]" class="impfungen" readonly {{ active }}>
+                {%- if behandlung|isdict -%}
+                  {{- behandlung['impfungen'] -}}
+                {%- else -%}
+                  {%- for impfung in behandlung.impfungen -%}
+                    {%- if loop.index > 1 %},{%- endif -%}
+                    {{- impfung.impfungscode|mapimpfung -}}
+                  {%- endfor -%}
+                {%- endif -%}
                 </textarea>
               </td>
 
-              <td style="width: 5%"><textarea name="gewicht[]" disabled>{{- behandlung.gewicht|sn -}}</textarea></td>
+              <td style="width: 5%"><textarea name="gewicht[]" {{ active }}>{{- behandlung['gewicht'] or behandlung.gewicht -}}</textarea></td>
 
               <td style="width: 6%">
                 <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
 
                 <p><a href="#" onclick="delrow($(this));">löschen</a></p>
               </td>
-            {%- else -%}
-              {%- set ns.editerror = ns.editerror + 1 -%}
-
-              <input type="hidden" name="behandlung_id[]" value="{{- behandlung['behandlung_id'] -}}">
-
-              <td style="width: 8%">
-                <input type="text" name="datum[]" class="date" value="{{- behandlung['datum'] -}}">
-              </td>
-                {%- if ns.editerror == 1 -%}
-                  <td style="width: 30%"><textarea name="diagnose[]" id="edit">{{- behandlung['diagnose'] -}}</textarea></td>
-                {%- else -%}
-                  <td style="width: 30%"><textarea name="diagnose[]">{{- behandlung['diagnose'] -}}</textarea></td>
-                {%- endif -%}
-
-                <td style="width: 11%"><textarea name="laborwerte1[]" class="labor">{{- behandlung['laborwerte1'] -}}</textarea></td>
-
-                <td style="width: 11%"><textarea name="laborwerte2[]" class="labor">{{- behandlung['laborwerte2'] -}}</textarea></td>
-
-                <td style="width: 14%"><textarea name="arzneien[]">{{- behandlung['arzneien'] -}}</textarea></td>
-
-                <td style="width: 7%"><textarea name="arzneimittel[]">{{- behandlung['arzneimittel'] -}}</textarea></td>
-
-                <td style="width: 9%"><textarea name="impfungen[]" class="impfungen" readonly>{{- behandlung['impfungen'] -}}</textarea></td>
-
-                <td style="width: 5%"><textarea name="gewicht[]">{{- behandlung['gewicht'] -}}</textarea></td>
-
-                <td style="width: 6%">
-                  <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern rückgängig</a></p>
-
-                  <p><a href="#" onclick="delrow($(this));">löschen</a></p>
-                </td>
-            {%- endif -%}
             </tr>
           {%- endfor -%}
 
-          {%- if ns.editerror == 0 -%}
+          {%- if not error -%}
             <tr>
               <td style="width: 8%">
                   <input type="hidden" name="behandlung_id[]" value="">
+                  <input type="hidden" name="tier_id[]" value="">
+
                   <input type="text" name="datum[]" class="date" value="{{- datum -}}">
               </td>
 
@@ -133,14 +114,17 @@
 
               <td style="width: 7%"><textarea name="arzneimittel[]"></textarea></td>
 
-              <td style="width: 9%"><textarea name="impfungen[]" class="impfungen" readonly></textarea></td>
+              <td style="width: 9%">
+                <textarea name="impfungen[]" class="impfungen" readonly></textarea>
+              </td>
 
               <td style="width: 5%"><textarea name="gewicht[]"></textarea></td>
 
-              <td style="width: 6%">&nbsp;</td>
+              <td style="width: 6%">
+                <p>&nbsp;</p>
+              </td>
             </tr>
           {%- endif -%}
-
           </tbody>
         </table>
       </div>

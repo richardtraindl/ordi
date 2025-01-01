@@ -89,6 +89,7 @@ def fill_and_validate_person(person, request):
 def build_behandlungen(request):    
     data = (
         request.form.getlist('behandlung_id[]'),
+        request.form.getlist('tier_id[]'),
         request.form.getlist('datum[]'),
         request.form.getlist('gewicht[]'),
         request.form.getlist('diagnose[]'),
@@ -98,22 +99,22 @@ def build_behandlungen(request):
         request.form.getlist('arzneimittel[]'),
         request.form.getlist('impfungen[]')
     )
+
     reqbehandlungen = []
     for idx in range(len(data[0])):
         reqbehandlung = {}
         reqbehandlung['behandlung_id'] = data[0][idx]
-        reqbehandlung['tier_id'] = ""
-        reqbehandlung['datum'] = data[1][idx]
-        reqbehandlung['gewicht'] = data[2][idx]
-        reqbehandlung['diagnose'] = data[3][idx]
-        reqbehandlung['laborwerte1'] = data[4][idx]
-        reqbehandlung['laborwerte2'] = data[5][idx]
-        reqbehandlung['arzneien'] = data[6][idx]
-        reqbehandlung['arzneimittel'] = data[7][idx]
-        reqbehandlung['impfungen'] = data[8][idx]
+        reqbehandlung['tier_id'] = data[1][idx]
+        reqbehandlung['datum'] = data[2][idx]
+        reqbehandlung['gewicht'] = data[3][idx]
+        reqbehandlung['diagnose'] = data[4][idx]
+        reqbehandlung['laborwerte1'] = data[5][idx]
+        reqbehandlung['laborwerte2'] = data[6][idx]
+        reqbehandlung['arzneien'] = data[7][idx]
+        reqbehandlung['arzneimittel'] = data[8][idx]
+        reqbehandlung['impfungen'] = data[9][idx]
 
-        if(len(reqbehandlung['behandlung_id']) == 0 and 
-           len(reqbehandlung['gewicht']) == 0 and
+        if(len(reqbehandlung['gewicht']) == 0 and
            len(reqbehandlung['diagnose']) == 0 and
            len(reqbehandlung['laborwerte1']) == 0 and
            len(reqbehandlung['laborwerte2']) == 0 and
@@ -126,24 +127,35 @@ def build_behandlungen(request):
     return reqbehandlungen
 
 
-def fill_and_validate_behandlung(behandlung, reqbehandlung):
+def fill_and_validate_behandlung(reqbehandlung):
     error = ""
 
-    if(len(reqbehandlung['datum']) > 10):
+    behandlung = Behandlung()
+
+    if(len(reqbehandlung['behandlung_id']) > 0):
+        try:
+            behandlung.id = int(reqbehandlung['behandlung_id'])
+        except:
+            behandlung.id = None
+
+    if(len(reqbehandlung['tier_id']) > 0):
+        try:
+            behandlung.tier_id = int(reqbehandlung['tier_id'])
+        except:
+            behandlung.tier_id = None
+
+    if(len(reqbehandlung['datum']) >= 10):
         str_datum = reqbehandlung['datum'].split()[0]
+        try:
+            behandlung.datum = datetime.strptime(str_datum, "%d.%m.%Y")
+        except:
+            behandlung.datum = None
+            error += "Falsches Behandlungsdatum. "
     else:
-        str_datum = reqbehandlung['datum']
-    try:
-        datum = datetime.strptime(str_datum, "%d.%m.%Y")
-    except:
+        behandlung.datum = None
         error += "Falsches Behandlungsdatum. "
-        datum = None
 
-    if(behandlung == None):
-        behandlung = Behandlung()
-
-    behandlung.datum=datum 
-    behandlung.gewicht=reqbehandlung['gewicht'] 
+    behandlung.gewicht=reqbehandlung['gewicht']
     behandlung.diagnose=reqbehandlung['diagnose']
     behandlung.laborwerte1=reqbehandlung['laborwerte1'] 
     behandlung.laborwerte2=reqbehandlung['laborwerte2']

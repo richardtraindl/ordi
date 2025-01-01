@@ -46,16 +46,16 @@
     <table class="liste">
     {%- for rechnung in rechnungen -%}
       <tr>
-        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.jahr -}}</a></td>
+        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.jahr -}}</a></td>
 
-        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.lfnr -}}</a></td>
+        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.lfnr -}}</a></td>
 
-        <td width="10%"><a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">
+        <td width="10%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
         {{- rechnung.Rechnung.brutto_summe|currency -}}
         </a></td>
 
         <td width="36%">
-          <a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">
+          <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
           {%- with person=rechnung.Person -%}
             {%- include '_liste_person.html' -%}
           {%- endwith -%}
@@ -63,7 +63,7 @@
         </td>
 
         <td width="36%">
-          <a target="_blank" href="{{ url_for('rechnung.edit', rechnung_id=rechnung.Rechnung.id) }}">
+          <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
           {%- with tier=rechnung.Tier -%}
             {%- include '_liste_tier.html' -%}
           {%- endwith -%}

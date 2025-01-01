@@ -94,11 +94,6 @@ def create(tierhaltung_id):
     if(request.method == 'POST'):
         rechnung, error = fill_and_validate_rechnung(None, request)
         reqrechnungszeilen = build_rechnungszeilen(request)
-        #if(len(reqrechnungszeilen) == 0):
-            #error += "Es muss mind. eine Rechnungszeile vorhanden sein. "
-        if(len(error) > 0):
-            flash(error)
-            return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, artikelwerte=artikelwerte, page_title="Rechnung")
 
         rechnungszeilen = []
         for reqrechnungszeile in reqrechnungszeilen:
@@ -137,18 +132,19 @@ def create(tierhaltung_id):
             flash(error)
             return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, artikelwerte=artikelwerte, page_title="Rechnung")
 
-        return redirect(url_for('rechnung.edit', rechnung_id=rechnung.id))
+        return redirect(url_for('rechnung.show', rechnung_id=rechnung.id))
     else:
         rechnung = Rechnung()
         datum = datetime.now().strftime("%d.%m.%Y")
         ort = "Wien"
         rechnungszeilen=[] #[Rechnungszeile(datum=datum)]
+
         return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=rechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, datum=datum, ort=ort, artikelwerte=artikelwerte, page_title="Rechnung")
 
 
-@bp.route('/<int:rechnung_id>/edit', methods=('GET', 'POST'))
+@bp.route('/<int:rechnung_id>/save_rechnung', methods=('GET', 'POST'))
 @login_required
-def edit(rechnung_id):
+def save_rechnung(rechnung_id):
     artikelwerte = []
     for key, value in ARTIKEL.items():
         artikelwerte.append([key, value])
@@ -168,7 +164,7 @@ def edit(rechnung_id):
         reqrechnungszeilen = build_rechnungszeilen(request)
 
         #####################
-        # Rechnungszeilen aus Datenbank mit jenen des Request mergen
+        # Rechnungszeilen aus Datenbank mit jenen des Requests mergen
         mergedzeilen = []
         for rechnungszeile in rechnungszeilen:
             found = False
@@ -194,12 +190,6 @@ def edit(rechnung_id):
             flash(error)
             return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, artikelwerte=artikelwerte, page_title="Rechnung")
 
-        """if(len(mergedzeilen) == 0):
-            error += "Es muss mind. eine Rechnungszeile vorhanden sein. "
-            flash(error)
-            return render_template('rechnung/rechnung.html', rechnung=rechnung, 
-                rechnungszeilen=mergedzeilen, artikelwerte=artikelwerte, page_title="Rechnung")"""
-
         calczeilen = []
         for mergedzeile in mergedzeilen:
             if(type(mergedzeile) is dict):
@@ -218,8 +208,6 @@ def edit(rechnung_id):
                                 newrechnungszeile.artikel=rechnungszeile.artikel
                                 newrechnungszeile.betrag=rechnungszeile.betrag
                                 calczeilen.append(newrechnungszeile)
-                            #if(mergedzeile['touched'] == "-1"):
-                            #    db.session.delete(newrechnungszeile)
                     else:
                         db.session.add(rechnungszeile)
                         calczeilen.append(rechnungszeile)
@@ -242,8 +230,7 @@ def edit(rechnung_id):
 
         rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung.id).all()
 
-    return render_template('rechnung/rechnung.html', rechnung=rechnung, 
-        rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, page_title="Rechnung")
+    return redirect(url_for('rechnung.show', rechnung_id=rechnung.id))
 
 
 @bp.route('/<int:rechnung_id>/show', methods=('GET',))
@@ -256,7 +243,7 @@ def show(rechnung_id):
     rechnung = db.session.query(Rechnung).get(rechnung_id)
     rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung.id).all()
 
-    return render_template('rechnung/mobile_rechnung.html', rechnung=rechnung, 
+    return render_template('rechnung/rechnung.html', rechnung=rechnung, 
         rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, page_title="Rechnung")
 
 

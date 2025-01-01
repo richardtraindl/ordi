@@ -15,18 +15,10 @@
 
       <div class="flex-container">
         <p><input type="submit" value="speichern"></p>
-
-        <p class="btn"><a href="#" onClick="closeCurrent()">Abbrechen</a></p>
       </div>
     </form>
 
     <script>
-     function closeCurrent(){
-         if(confirm('Abbrechen?')){
-          window.close();
-        }
-      }
-
       $(document).ready(function(){
 
         $.datepicker.setDefaults($.datepicker.regional["de"]);

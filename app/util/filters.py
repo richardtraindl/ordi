@@ -36,7 +36,10 @@ def mapartikel(artikelcode):
 def conv_curr(amount): 
   import locale 
   locale.setlocale(locale.LC_ALL, 'de_AT.UTF-8')
-  return locale.currency(amount, symbol=False, grouping=False, international=False)
+  try:
+      return locale.currency(amount, symbol=False, grouping=False, international=False)
+  except:
+      return amount
 
 
 def filter_supress_none(val):
@@ -48,13 +51,16 @@ def filter_supress_none(val):
 
 def filter_format_date(val):
     if not val is None:
-        if(val.year==1900 and val.month==1 and val.day==1):
-            return ""
+        try:
+            if(val.year==1900 and val.month==1 and val.day==1):
+                return ""
+        except:
+                return val
         else:
             try:
                 return val.strftime("%d.%m.%Y")
             except:
-                return ""
+                return val
     else:
         return ""
 
@@ -77,6 +83,10 @@ def filter_format_datetime(val):
         return val.strftime("%d.%m.%Y, %H:%M")
     else:
         return ""
+
+
+def filter_is_dict(val):
+    return isinstance(val, dict)
 
 
 def calc_kw(now):

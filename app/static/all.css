@@ -8,8 +8,8 @@
     margin: 0;
     padding: 0;
     font-weight: normal;
-    font-size: 12px; 
-    line-height: 14px;
+    font-size: 1em; 
+    line-height: 1.2em;
     font-family: 'Open Sans';
 }
 
@@ -180,5 +180,5 @@ img {
 }
 
 #neue_zeile input[type=text], #neue_zeile textarea, #neue_zeile select { 
-    display: none; 
+  display: none; 
 }

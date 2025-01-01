@@ -42,7 +42,7 @@ app.register_blueprint(admin.bp)
 
 from .util.filters import mapanrede, mapgeschlecht, mapimpfung, mapartikel, \
                           conv_curr, filter_supress_none, filter_format_date, filter_format_datetime, \
-                          filter_mformat_date, calc_kw, add_days, add_hours, add_mins, \
+                          filter_mformat_date, filter_is_dict, calc_kw, add_days, add_hours, add_mins, \
                           gib_feiertag
 app.jinja_env.filters['mapanrede'] = mapanrede
 app.jinja_env.filters['mapgeschlecht'] = mapgeschlecht
@@ -52,7 +52,8 @@ app.jinja_env.filters['currency'] = conv_curr
 app.jinja_env.filters['sn'] = filter_supress_none
 app.jinja_env.filters['dt'] = filter_format_date
 app.jinja_env.filters['mdt'] = filter_mformat_date
-app.jinja_env.filters['dttm'] = filter_format_datetime    
+app.jinja_env.filters['dttm'] = filter_format_datetime
+app.jinja_env.filters['isdict'] = filter_is_dict
 app.jinja_env.filters['calc_kw'] = calc_kw
 app.jinja_env.filters['add_days'] = add_days
 app.jinja_env.filters['add_hours'] = add_hours

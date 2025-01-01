@@ -1,0 +1,8 @@
+"flask<3"
+"werkzeug<3"
+flask_login
+flask_sqlalchemy
+flask_migrate
+fpdf
+openpyxl
+python-dotenv-1.0.1
