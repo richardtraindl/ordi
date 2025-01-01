@@ -294,10 +294,6 @@ def save_behandlungen(id):
     if(request.method == 'POST'):
         tierhaltung = Tierhaltung.query.get(id)
 
-        behandlungen = db.session.query(Behandlung) \
-                        .filter(Behandlung.tier_id == tierhaltung.tier.id) \
-                        .order_by(Behandlung.datum.asc()).all()
-
         datum=datetime.today()
 
         errorbehandlungen = []
@@ -338,7 +334,7 @@ def save_behandlungen(id):
                     save_or_delete_impfungen(dbbehandlung, impfungstexte)
 
         # Neu lesen nach Speichern
-        neuebehandlungen = db.session.query(Behandlung) \
+        behandlungen = db.session.query(Behandlung) \
                         .filter(Behandlung.tier_id == tierhaltung.tier.id) \
                         .order_by(Behandlung.datum.asc()).all()
 
@@ -350,12 +346,12 @@ def save_behandlungen(id):
                 except:
                     continue
                 
-                for idx in range(len(neuebehandlungen)):
-                    if(not isinstance(neuebehandlungen[idx], dict)):
-                        if(neuebehandlungen[idx].id == behandlung_id):
-                            neuebehandlungen[idx] = errorbehandlung
+                for idx in range(len(behandlungen)):
+                    if(not isinstance(behandlungen[idx], dict)):
+                        if(behandlungen[idx].id == behandlung_id):
+                            behandlungen[idx] = errorbehandlung
             else:
-                neuebehandlungen.append(errorbehandlung)
+                behandlungen.append(errorbehandlung)
 
         if(len(errors) > 0):
             flash(errors[-1])
@@ -376,7 +372,7 @@ def save_behandlungen(id):
             for key, value in IMPFUNG.items():
                 impfungswerte.append([key, value])
 
-            return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=neuebehandlungen, 
+            return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen, 
                       datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
                       laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=error, page_title="Karteikarte")
 

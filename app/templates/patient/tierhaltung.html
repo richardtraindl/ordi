@@ -47,33 +47,36 @@
           {%- for behandlung in behandlungen -%}
             {%- if behandlung|isdict -%}
               {% set active = '' %}
+              {% set mark = 'background-color: Red;' %}
             {% else %}
               {% set active = 'disabled' %}
+              {% set mark = '' %}
             {% endif %}
+
             <tr>
               <td style="width: 8%">
                  <input type="hidden" name="behandlung_id[]" value="{{- behandlung['behandlung_id'] or behandlung.id -}}" {{ active }}>
                 <input type="hidden" name="tier_id[]" value="{{- behandlung['tier_id'] or tierhaltung.tier_id -}}" {{ active }}>
 
-                <input type="text" name="datum[]" class="date" value="{{- behandlung['datum']|dt or behandlung.datum|dt -}}" {{ active }}>
+                <input type="text" name="datum[]" class="date" style="{{ mark }}" value="{{- behandlung['datum']|dt or behandlung.datum|dt -}}" {{ active }}>
               </td>
 
-              <td style="width: 30%"><textarea name="diagnose[]" {{ active }}>{{- behandlung['diagnose'] or behandlung.diagnose -}}</textarea></td>
+              <td style="width: 30%"><textarea name="diagnose[]" style="{{ mark }}" {{ active }}>{{- behandlung['diagnose'] or behandlung.diagnose -}}</textarea></td>
 
               <td style="width: 11%">
-                <textarea name="laborwerte1[]" class="labor" {{ active }}>{{- behandlung['laborwerte1'] or behandlung.laborwerte1 -}}</textarea>
+                <textarea name="laborwerte1[]" class="labor" style="{{ mark }}" {{ active }}>{{- behandlung['laborwerte1'] or behandlung.laborwerte1 -}}</textarea>
               </td>
 
               <td style="width: 11%">
-                <textarea name="laborwerte2[]" class="labor" {{ active }}>{{- behandlung['laborwerte2'] or behandlung.laborwerte2 -}}</textarea>
+                <textarea name="laborwerte2[]" class="labor" style="{{ mark }}" {{ active }}>{{- behandlung['laborwerte2'] or behandlung.laborwerte2 -}}</textarea>
               </td>
 
-              <td style="width: 14%"><textarea name="arzneien[]" {{ active }}>{{- behandlung['arzneien'] or behandlung.arzneien -}}</textarea></td>
+              <td style="width: 14%"><textarea name="arzneien[]" style="{{ mark }}" {{ active }}>{{- behandlung['arzneien'] or behandlung.arzneien -}}</textarea></td>
 
-              <td style="width: 7%"><textarea name="arzneimittel[]" {{ active }}>{{- behandlung['arzneimittel'] or behandlung.arzneimittel -}}</textarea></td>
+              <td style="width: 7%"><textarea name="arzneimittel[]" style="{{ mark }}" {{ active }}>{{- behandlung['arzneimittel'] or behandlung.arzneimittel -}}</textarea></td>
 
               <td style="width: 9%">
-                <textarea name="impfungen[]" class="impfungen" readonly {{ active }}>
+                <textarea name="impfungen[]" class="impfungen" readonly style="{{ mark }}" {{ active }}>
                 {%- if behandlung|isdict -%}
                   {{- behandlung['impfungen'] -}}
                 {%- else -%}
@@ -85,7 +88,7 @@
                 </textarea>
               </td>
 
-              <td style="width: 5%"><textarea name="gewicht[]" {{ active }}>{{- behandlung['gewicht'] or behandlung.gewicht -}}</textarea></td>
+              <td style="width: 5%"><textarea name="gewicht[]" style="{{ mark }}" {{ active }}>{{- behandlung['gewicht'] or behandlung.gewicht -}}</textarea></td>
 
               <td style="width: 6%">
                 <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
