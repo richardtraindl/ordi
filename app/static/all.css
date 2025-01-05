@@ -25,6 +25,10 @@ a { color: #377ba8; text-decoration: none; }
 
 .flash { margin: 0.7em 0; padding: 0.5em; background-color: OrangeRed; border: 0.1em solid #377BA8; }
 
+input[error], textarea[error]{
+  background-color: OrangeRed;
+}
+
 header { 
     background-color: Lightgray;
     margin-top: 0.6em;

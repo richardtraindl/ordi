@@ -374,7 +374,7 @@ def save_behandlungen(id):
 
             return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen, 
                       datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
-                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=error, page_title="Karteikarte")
+                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=errors[-1], page_title="Karteikarte")
 
     return redirect(url_for('patient.show', id=id))
 

@@ -50,13 +50,13 @@
 
   <table class="liste">
     <tr>
-      <th width="43%">Kunde</th>
+      <th width="42%">Kunde</th>
 
-      <th width="43%">Patient</th>
+      <th width="42%">Patient</th>
 
-      <th width="8%">Aktionen</th>
+      <th width="10%">Aktionen</th>
 
-      <th width="6%">löschen</th>
+      <th width="6%">Vorsicht</th>
     </tr>
   </table>
 
@@ -64,7 +64,7 @@
     <table class="liste">
     {%- for th in tierhaltungen -%}
       <tr>
-        <td width="43%">
+        <td width="42%">
           <a target="_blank" style="text-decoration: underline;" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
           {%- with person=th.Person -%}
             {%- include '_liste_person.html' -%}
@@ -72,7 +72,7 @@
           </a>
         </td>
 
-        <td width="43%">
+        <td width="42%">
           <a target="_blank" style="text-decoration: underline;" href="{{ url_for('patient.show', id=th.Tierhaltung.id) }}">
           {%- with tier=th.Tier -%}
             {%- include '_liste_tier.html' -%}
@@ -80,12 +80,12 @@
           </a>
         </td>
 
-        <td width="8%">
-          <a target="_blank" href="{{ url_for('rechnung.create', tierhaltung_id=th.Tierhaltung.id) }}">n. Rechnung</a><br>
+        <td width="10%">
+          <a target="_blank" href="{{ url_for('rechnung.create', tierhaltung_id=th.Tierhaltung.id) }}">neue Rechnung</a><br>
 
-          <a target="_blank" href="{{ url_for('behandlungsverlauf.create', id=th.Tierhaltung.id) }}">n. Beh.Verlauf</a><br>
+          <a target="_blank" href="{{ url_for('behandlungsverlauf.create', id=th.Tierhaltung.id) }}">neuer Beh.Verlauf</a><br>
 
-          <a target="_blank" href="{{ url_for('patient.create_tier', id=th.Tierhaltung.id) }}">n. Tier</a>
+          <a target="_blank" href="{{ url_for('patient.create_tier', id=th.Tierhaltung.id) }}">neues Tier</a>
         </td>
 
         <td width="6%">

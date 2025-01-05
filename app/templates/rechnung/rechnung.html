@@ -32,21 +32,21 @@
   {% else %}
     <form method="post" action="{{ url_for('rechnung.create', tierhaltung_id=tierhaltung_id) }}">
   {% endif %}
-      <input type="hidden" name="rechnung_id" id="rechnung_id" value="{{- rechnung.id or '' -}}">
+      <input type="hidden" name="rechnung_id" id="rechnung_id" value="{{- rechnung['rechnung_id'] or rechnung.id or '' -}}">
 
       <div>
         <div class="row-grid" style="grid-template-columns: auto auto auto auto;">
-            <label for="jahr">Rechnungsjahr</label>
-            <input type="text" size=3 name="jahr" id="jahr" class="change" value="{{- request.form['jahr'] or rechnung.jahr|sn -}}" required>
+          <label for="jahr">Rechnungsjahr</label>
+          <input type="text" size=3 name="jahr" id="jahr" class="change" value="{{- rechnung['jahr']|sn or rechnung.jahr|sn -}}" required>
 
-            <label for="lfnr">Rechnungslfnr</label>
-            <input type="text" size=3 name="lfnr" id="lfnr" class="change" value="{{- request.form['lfnr'] or rechnung.lfnr|sn -}}" required>
+          <label for="lfnr">Rechnungslfnr</label>
+          <input type="text" size=3 name="lfnr" id="lfnr" class="change" value="{{- rechnung['lfnr'] or rechnung.lfnr|sn -}}" required>
 
-            <label for="datum">Ausstellungsdatum</label>
-            <input type="text" size=8 name="datum" id="datum" class="date change" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}" required>
+          <label for="datum">Ausstellungsdatum</label>
+          <input type="text" size=8 name="datum" id="datum" class="date change" value="{{- rechnung['datum']|dt or rechnung.datum|dt or datum -}}" required>
 
-            <label for="ort">Ausstellungsort</label>
-            <input type="text" size=10 name="ort" id="ort" class="change" value="{{- request.form['ort'] or rechnung.ort or ort -}}" required>
+          <label for="ort">Ausstellungsort</label>
+          <input type="text" size=10 name="ort" id="ort" class="change" value="{{- rechnung['ort'] or rechnung.ort or ort -}}" required>
         </div>
       </div>
       
@@ -54,11 +54,11 @@
           
       <div>
         <div class="row-grid" style="grid-template-columns: auto auto;">
-            <label for="diagnose">Diagnose</label>
-            <textarea style="width: 480px; height: 42px" name="diagnose" id="diagnose" class="change">{{- request.form['diagnose'] or rechnung.diagnose|sn -}}</textarea>
+          <label for="diagnose">Diagnose</label>
+          <textarea style="width: 480px; height: 42px" name="diagnose" id="diagnose" class="change">{{- rechnung['diagnose'] or rechnung.diagnose|sn -}}</textarea>
 
-            <label for="bezahlung">Bezahlung</label>
-            <input type="text" size=30 name="bezahlung" id="bezahlung" class="change" value="{{- request.form['bezahlung'] or rechnung.bezahlung|sn -}}">
+          <label for="bezahlung">Bezahlung</label>
+          <input type="text" size=30 name="bezahlung" id="bezahlung" class="change" value="{{- rechnung['bezahlung'] or rechnung.bezahlung|sn -}}">
         </div>
       <div>
 
@@ -82,25 +82,38 @@
         <table class="records">
           <tbody>
           {% for rz in rechnungszeilen %}
+            {%- if rz|isdict -%}
+              {% set active = '' %}
+              {% set mark = 'error=error' %}
+            {% else %}
+              {% set active = 'disabled=disabled' %}
+              {% set mark = '' %}
+            {% endif %}
+          
             <tr>
               <td style="width: 10%">
-                <input type="hidden" name="rechnungszeile_id[]" value="{{- rz.id -}}" disabled>
-                <input type="hidden" name="touched[]" value="0" disabled>
+                <input type="hidden" name="rechnung_id[]" {{ active }} value="{{- rechnung['rechnung_id'] or rechnung.id or '' -}}">
+                <input type="hidden" name="rechnungszeile_id[]" {{ active }} value="{{- rz['rechnungszeile_id'] or rz.id -}}">
+                <!--input type="hidden" name="touched[]" value="0" disabled-->
 
-                <input type="text" style="width: 100%" name="datum[]" class="date change" value="{{- rz.datum|dt -}}" disabled>
+                <input type="text" style="width: 100%" name="datum[]" class="date change" {{ mark }} {{ active }} value="{{- rz['datum']|dt or rz.datum|dt -}}">
               </td>
 
-              {% set artikelcode = rz.artikelcode %}
-              {% set active = False %}
+              {%- if rz|isdict -%}
+                {% set artikelcode = rz['artikelcode'] %}
+              {%- else -%}
+                {% set artikelcode = rz.artikelcode %}
+              {%- endif -%}
+
               <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
               
-              <td style="width: 54%"><textarea maxlength="60" style="width: 100%; height: 42px;" name="artikel[]" class="change" disabled>{{- rz.artikel -}}</textarea></td>
+              <td style="width: 54%">
+                <textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change" {{ mark }} {{ active }}>{{- rz['artikel'] or rz.artikel -}}</textarea>
+              </td>
               
-              {% if rechnung and rechnung.id %}
-               <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change" disabled>{{- rz.betrag|sn|currency -}}</textarea></td>
-              {% else %}
-               <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change" disabled>{{- rz.betrag -}}</textarea></td>
-              {% endif %}
+              <td style="width: 8%">
+                <textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change" {{ mark }} {{ active }}>{{- rz['betrag']|sn|currency or rz.betrag|sn|currency -}}</textarea>
+              </td>
             
               <td style="width: 8%">
                 <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
@@ -110,12 +123,14 @@
             </tr>
           {% endfor %}
 
+          {%- if not error -%}
             <tr id="neue_zeile">
               <td style="width: 10%">
+                <input type="hidden" name="rechnung_id[]" value="">
                 <input type="hidden" name="rechnungszeile_id[]" value="">
-                <input type="hidden" name="touched[]" value="0">
+                <!-- input type="hidden" name="touched[]" value="0"-->
 
-                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|dt or rechnung.datum|dt or datum -}}">
                 <!--input type="text" style="width: 100%" name="datum[]" class="date" value="{{- request.form['datum'] or rechnung.datum|dt or datum -}}"-->
               </td>
 
@@ -123,12 +138,13 @@
               {% set active = True %}
               <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
 
-              <td style="width: 54%"><textarea style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
+              <td style="width: 54%"><textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
 
-              <td style="width: 8%"><textarea style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
+              <td style="width: 8%"><textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
 
               <td style="width: 8%"><a href="#" onclick="newrow($(this));">neue Rechnungszeile</a></td>
             </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>
@@ -174,8 +190,8 @@
         $obj.closest("tbody").append(
             '<tr id="neue_zeile">' +
               '<td style="width: 10%">' + 
+                '<input type="hidden" name="rechnung_id[]" value="">' + 
                 '<input type="hidden" name="rechnungszeile_id[]" value="">' +
-                '<input type="hidden" name="touched[]" value="1">' +
                 '<input type="text" style="width: 100%" name="datum[]" class="date" value="' + day + "." + month + "." + year + '">' + 
               '</td>' + 
               '<td style="width: 20%">' + 
@@ -209,8 +225,8 @@
       function editrow($obj){ 
         var row = $obj.closest("tr");
 
-        var touched = row.find("input[name='touched[]']").val();
-        if(touched == 0){
+        var disabled = row.find("input[name='datum[]']").attr("disabled");
+        if(disabled == "disabled"){
           row.find("textarea").removeAttr("disabled");
           row.find("input").removeAttr("disabled");
           row.find("select").removeAttr("disabled");
@@ -219,7 +235,7 @@
           $('#als_neue_rechnung').addClass('grayed');
           $('#print').addClass('grayed');
         }
-        if(touched == 1){
+        else{
           var rechnungszeile_id = row.find("input[name='rechnungszeile_id[]']").val();
           if(rechnungszeile_id != null){
             var url = "/rechnung/" + rechnungszeile_id.toString() + "/async_read_rechnungszeile"
@@ -288,6 +304,7 @@
           });
 
           $('#edit').focus();
+          $("input[error]").focus();
 
           var element = document.getElementById("scroller");
           element.scrollTop = element.scrollHeight;

@@ -173,6 +173,7 @@ def fill_and_validate_rechnung(rechnung, request):
     except:
         jahr = None
         error += "Jahr fehlt oder ungültig. "
+
     try:
         lfnr = int(request.form['lfnr'])
     except:
@@ -209,81 +210,89 @@ def fill_and_validate_rechnung(rechnung, request):
 
 def build_rechnungszeilen(request):
     data = (
+        request.form.getlist('rechnung_id[]'),
         request.form.getlist('rechnungszeile_id[]'),
-        request.form.getlist('touched[]'),
         request.form.getlist('datum[]'),
         request.form.getlist('artikelcode[]'),
         request.form.getlist('artikel[]'),
         request.form.getlist('betrag[]')
     )
-    req_rechnungszeilen = []
+    reqrechnungszeilen = []
     for idx in range(len(data[0])):
-        req_rechnungszeile = {}
-        req_rechnungszeile['rechnungszeile_id'] = data[0][idx]
-        req_rechnungszeile['touched'] = data[1][idx]
-        req_rechnungszeile['datum'] = data[2][idx]
-        req_rechnungszeile['artikelcode'] = data[3][idx]
-        req_rechnungszeile['artikel'] = data[4][idx]
-        req_rechnungszeile['betrag'] = data[5][idx]
+        reqrechnungszeile = {}
+        reqrechnungszeile['rechnung_id'] = data[0][idx]
+        reqrechnungszeile['rechnungszeile_id'] = data[1][idx]
+        reqrechnungszeile['datum'] = data[2][idx]
+        reqrechnungszeile['artikelcode'] = data[3][idx]
+        reqrechnungszeile['artikel'] = data[4][idx]
+        reqrechnungszeile['betrag'] = data[5][idx]
 
-        if(len(req_rechnungszeile['rechnungszeile_id']) == 0 and 
-           req_rechnungszeile['artikelcode'] == "0" and
-           len(req_rechnungszeile['artikel']) == 0 and 
-           len(req_rechnungszeile['betrag']) == 0):
+        if(len(reqrechnungszeile['rechnungszeile_id']) == 0 and 
+           reqrechnungszeile['artikelcode'] == "0" and
+           len(reqrechnungszeile['artikel']) == 0 and 
+           len(reqrechnungszeile['betrag']) == 0):
             continue
 
-        req_rechnungszeilen.append(req_rechnungszeile)
-    return req_rechnungszeilen
+        reqrechnungszeilen.append(reqrechnungszeile)
+    return reqrechnungszeilen
 
 
-def fill_and_validate_rechnungszeile(rechnung, rechnungszeile, req_rechnungszeile):
+def fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile):
     error = ""
 
-    try:
-        rechnungszeile_id = int(req_rechnungszeile['rechnungszeile_id'])
-    except:
-        rechnungszeile_id = None
+    rechnungszeile = Rechnungszeile()
 
-    if(len(req_rechnungszeile['datum']) > 10):
-        str_datum = req_rechnungszeile['datum'].split()[0]
+    try:
+        rechnungszeile.rechnung_id = int(reqrechnungszeile['rechnung_id'])
+    except:
+        rechnungszeile.rechnung_id = None
+
+    try:
+        rechnungszeile.id = int(reqrechnungszeile['rechnungszeile_id'])
+    except:
+        rechnungszeile.id = None
+
+    if(rechnung and rechnung.id):
+        rechnungszeile.rechnung_id=rechnung.id
+
+    if(len(reqrechnungszeile['datum']) >= 10):
+        str_datum = reqrechnungszeile['datum'].split()[0]
+        try:
+            rechnungszeile.datum = datetime.strptime(str_datum, "%d.%m.%Y")
+        except:
+            rechnungszeile.datum = None
+            error += "Falsches Rechnungszeilendatum. "
     else:
-        str_datum = req_rechnungszeile['datum']
-    try:
-        datum = datetime.strptime(str_datum, "%d.%m.%Y")
-    except:
-        datum = None
-        error += "Falsches Datum. "
+        rechnungszeile.datum = None
+        error += "Falsches Rechnungszeilendatum. "
 
     try:
-        artikelcode = int(req_rechnungszeile['artikelcode'])
+        rechnungszeile.artikelcode = int(reqrechnungszeile['artikelcode'])
+        try:
+            steuersatz = ARTIKEL_STEUER[rechnungszeile.artikelcode]
+        except:
+            rechnungszeile.artikelcode=None
+            error += "Falsche Artikelart. "
     except:
-        artikelcode = None
+        rechnungszeile.artikelcode = None
         error += "Falsche Artikelart. "
 
-    if(len(req_rechnungszeile['artikel']) == 0):
+    if(len(reqrechnungszeile['artikel']) > 0):
+        rechnungszeile.artikel=reqrechnungszeile['artikel']
+    else:
+        rechnungszeile.artikel = None
         error += "Artikeldetail fehlt. "
 
-    if(len(req_rechnungszeile['betrag']) == 0):
+    if(len(reqrechnungszeile['betrag']) == 0):
         betrag = None
         error += "Betrag fehlt. "
     else:
         try:
-            betrag = float(req_rechnungszeile['betrag'].replace(",", "."))
+            betrag = float(reqrechnungszeile['betrag'].replace(",", "."))
+            rechnungszeile.betrag=round(betrag, 2)
         except:
-            betrag = None
+            rechnungszeile.betrag = None
             error += "Betrag muss eine Zahl sein. "
-
-    if(rechnungszeile == None):
-        rechnungszeile = Rechnungszeile()
-
-    if(rechnungszeile_id):
-        rechnungszeile.id=rechnungszeile_id
-    if(rechnung and rechnung.id):
-        rechnungszeile.rechnung_id=rechnung.id
-    rechnungszeile.datum=datum
-    rechnungszeile.artikelcode=artikelcode
-    rechnungszeile.artikel=req_rechnungszeile['artikel']
-    rechnungszeile.betrag=betrag
 
     return rechnungszeile, error
 

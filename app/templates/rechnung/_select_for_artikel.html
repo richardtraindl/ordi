@@ -1,9 +1,5 @@
     
-  {% if active %}
-    <select name="artikelcode[]" class="change">
-  {%- else -%}
-    <select name="artikelcode[]" class="change" disabled>
-  {%- endif -%}
+  <select name="artikelcode[]" class="change" {{ mark }} {{ active }}>
 
   {%- for artikelwert in artikelwerte -%}
     {%- if artikelwert[1] == artikelcode or artikelwert[1] == artikelcode|int -%}

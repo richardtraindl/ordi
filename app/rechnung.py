@@ -94,6 +94,9 @@ def create(tierhaltung_id):
     if(request.method == 'POST'):
         rechnung, error = fill_and_validate_rechnung(None, request)
         reqrechnungszeilen = build_rechnungszeilen(request)
+        if(error):
+            flash(error)
+            return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, artikelwerte=artikelwerte, page_title="Rechnung")
 
         rechnungszeilen = []
         for reqrechnungszeile in reqrechnungszeilen:
@@ -137,7 +140,7 @@ def create(tierhaltung_id):
         rechnung = Rechnung()
         datum = datetime.now().strftime("%d.%m.%Y")
         ort = "Wien"
-        rechnungszeilen=[] #[Rechnungszeile(datum=datum)]
+        rechnungszeilen=[]
 
         return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=rechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, datum=datum, ort=ort, artikelwerte=artikelwerte, page_title="Rechnung")
 
@@ -150,85 +153,65 @@ def save_rechnung(rechnung_id):
         artikelwerte.append([key, value])
 
     rechnung = db.session.query(Rechnung).get(rechnung_id)
-    rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung.id).all()
 
     if(request.method == 'POST'):
-        try:
-            new = request.form['new']
-            print("new")
-            return redirect(url_for('rechnung.create'))
-        except:
-            pass
+        errors = []
+        errorrechnungszeilen = []
 
         rechnung, error = fill_and_validate_rechnung(rechnung, request)
         reqrechnungszeilen = build_rechnungszeilen(request)
-
-        #####################
-        # Rechnungszeilen aus Datenbank mit jenen des Requests mergen
-        mergedzeilen = []
-        for rechnungszeile in rechnungszeilen:
-            found = False
-            for reqrechnungszeile in reqrechnungszeilen:
-                if(len(reqrechnungszeile['rechnungszeile_id']) > 0):
-                    try:
-                        rechnungszeile_id = int(reqrechnungszeile['rechnungszeile_id'])
-                    except:
-                        continue
-                    if(rechnungszeile.id == rechnungszeile_id):
-                        mergedzeilen.append(reqrechnungszeile)
-                        found = True
-                        break
-            if(found == False):
-                mergedzeilen.append(rechnungszeile)
+        if(error):
+            flash(error)
+            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, artikelwerte=artikelwerte, error=error, page_title="Rechnung")
 
         for reqrechnungszeile in reqrechnungszeilen:
-            if(len(reqrechnungszeile['rechnungszeile_id']) == 0):
-                mergedzeilen.append(reqrechnungszeile)
-        #####################
-
-        if(len(error) > 0):
-            flash(error)
-            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, artikelwerte=artikelwerte, page_title="Rechnung")
-
-        calczeilen = []
-        for mergedzeile in mergedzeilen:
-            if(type(mergedzeile) is dict):
-                rechnungszeile, error = fill_and_validate_rechnungszeile(rechnung, None, mergedzeile)
-                if(len(error) > 0):
-                    db.session.rollback()
-                    flash(error)
-                    return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=mergedzeilen, artikelwerte=artikelwerte, page_title="Rechnung")
-                else:
-                    if(rechnungszeile.id):
-                        newrechnungszeile = db.session.query(Rechnungszeile).get(rechnungszeile.id)
-                        if(newrechnungszeile):
-                            if(mergedzeile['touched'] == "1"):
-                                newrechnungszeile.datum=rechnungszeile.datum
-                                newrechnungszeile.artikelcode=rechnungszeile.artikelcode
-                                newrechnungszeile.artikel=rechnungszeile.artikel
-                                newrechnungszeile.betrag=rechnungszeile.betrag
-                                calczeilen.append(newrechnungszeile)
-                    else:
-                        db.session.add(rechnungszeile)
-                        calczeilen.append(rechnungszeile)
+            rechnungszeile, error = fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile)
+            if(error):
+                errors.append(error)
+                errorrechnungszeilen.append(reqrechnungszeile)
             else:
-                calczeilen.append(mergedzeile)
+                if(rechnungszeile.id == None):
+                    rechnungszeile.rechnung_id=rechnung.id 
+                    db.session.add(rechnungszeile)
+                    db.session.commit()
+                else:
+                    dbrechnungszeile = db.session.query(Rechnungszeile).get(rechnungszeile.id)
+                    dbrechnungszeile.datum=rechnungszeile.datum
+                    dbrechnungszeile.artikelcode=rechnungszeile.artikelcode
+                    dbrechnungszeile.artikel=rechnungszeile.artikel
+                    dbrechnungszeile.betrag=rechnungszeile.betrag
+                    db.session.commit()
 
-        error = calc_and_fill_rechnung(rechnung, calczeilen)
-        if(len(error) > 0):
-            db.session.rollback()
-            flash(error)
-            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=mergedzeilen, artikelwerte=artikelwerte, page_title="Rechnung")
-
-        try:
-            db.session.commit()
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            error = str(e.__dict__['orig'])
-            flash(error)
-            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=mergedzeilen, artikelwerte=artikelwerte, page_title="Rechnung")
-
+        # Neu lesen nach Speichern
         rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung.id).all()
+
+        if(len(errors) > 0):
+            flash(errors[-1])
+
+            # Bestehende Datensätze mit fehlerhaften Request Datensätzen ergänzen (austauschen oder aufnehmen)
+            for errorrechnungszeile in errorrechnungszeilen:
+                if(len(errorrechnungszeile['rechnungszeile_id']) > 0):
+                    try:
+                        rechnungszeile_id = int(errorrechnungszeile['rechnungszeile_id'])
+                    except:
+                        print("ojeeeeeeeeeeeeeee")
+                        continue
+
+                    for idx in range(len(rechnungszeilen)):
+                        if(not isinstance(rechnungszeilen[idx], dict)):
+                            if(rechnungszeilen[idx].id == rechnungszeile_id):
+                                rechnungszeilen[idx] = errorrechnungszeile
+                else:
+                    rechnungszeilen.append(errorrechnungszeile)
+
+            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, error=errors[-1], page_title="Rechnung")
+
+    error = calc_and_fill_rechnung(rechnung, rechnungszeilen)
+    if(error):
+        flash(error)
+        return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, error=error, page_title="Rechnung")
+    else:
+        db.session.commit()
 
     return redirect(url_for('rechnung.show', rechnung_id=rechnung.id))
 
