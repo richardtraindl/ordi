@@ -123,7 +123,7 @@
             </tr>
           {% endfor %}
 
-          {%- if not error -%}
+          {#%- if not error -%#}
             <tr id="neue_zeile">
               <td style="width: 10%">
                 <input type="hidden" name="rechnung_id[]" value="">
@@ -144,7 +144,7 @@
 
               <td style="width: 8%"><a href="#" onclick="newrow($(this));">neue Rechnungszeile</a></td>
             </tr>
-            {% endif %}
+            {#% endif %#}
           </tbody>
         </table>
       </div>
