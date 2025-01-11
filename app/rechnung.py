@@ -153,6 +153,9 @@ def save_rechnung(rechnung_id):
         artikelwerte.append([key, value])
 
     rechnung = db.session.query(Rechnung).get(rechnung_id)
+    if(not rechnung):
+        flash("Rechnung nicht (mehr) vorhanden!")
+        return redirect(url_for('rechnung.index'))
 
     if(request.method == 'POST'):
         errors = []

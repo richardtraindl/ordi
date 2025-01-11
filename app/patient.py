@@ -291,8 +291,27 @@ def save_or_delete_impfungen(behandlung, impfungstexte):
 @bp.route('/<int:id>/save_behandlungen', methods=('GET', 'POST'))
 @login_required
 def save_behandlungen(id):
+    anredewerte = []
+    for key, value in ANREDE.items():
+        anredewerte.append([key, value])
+
+    geschlechtswerte = []
+    for key, value in GESCHLECHT.items():
+        geschlechtswerte.append([key, value])
+
+    laborreferenzen = []
+    for referenz in LABOR_REFERENZ:
+        laborreferenzen.append(referenz)
+
+    impfungswerte = []
+    for key, value in IMPFUNG.items():
+        impfungswerte.append([key, value])
+
     if(request.method == 'POST'):
         tierhaltung = Tierhaltung.query.get(id)
+        if(not tierhaltung):
+            flash("Tierhaltung nicht (mehr) vorhanden!")
+            return redirect(url_for('patient.index'))
 
         datum=datetime.today()
 
@@ -355,22 +374,6 @@ def save_behandlungen(id):
 
         if(len(errors) > 0):
             flash(errors[-1])
-
-            anredewerte = []
-            for key, value in ANREDE.items():
-                anredewerte.append([key, value])
-
-            geschlechtswerte = []
-            for key, value in GESCHLECHT.items():
-                geschlechtswerte.append([key, value])
-
-            laborreferenzen = []
-            for referenz in LABOR_REFERENZ:
-                laborreferenzen.append(referenz)
-
-            impfungswerte = []
-            for key, value in IMPFUNG.items():
-                impfungswerte.append([key, value])
 
             return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen, 
                       datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
