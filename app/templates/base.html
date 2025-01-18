@@ -12,15 +12,15 @@
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-    {%- if page_title != "Kalender" -%}
+    {%- if page_title != Kalender -%}
       <script src="{{ url_for('static', filename='hinweis_speichern.js') }}"></script>
     {%- endif -%}
 
-    {%- if page_title == "Kalender" -%}
+    {%- if page_title == Kalender -%}
       <link rel="stylesheet" href="{{ url_for('static', filename='kalender.css') }}">
     {%- endif -%}
 
-    {%- if page_title == "Termin" -%}
+    {%- if page_title == Termin -%}
       <link rel="stylesheet" href="{{ url_for('static', filename='kalender.css') }}">
 
       <link rel="stylesheet" href="{{ url_for('static', filename='jquery.timepicker.css') }}">
@@ -32,11 +32,11 @@
 
     <script src="{{ url_for('static', filename='datepicker-de.js') }}"></script>
 
-    {%- if page_title == "Kalender" -%}
+    {%- if page_title == Kalender -%}
       <script src="{{ url_for('static', filename='platziere_termine.js') }}"></script>
     {%- endif -%}
 
-    {%- if page_title == "Termin" -%}
+    {%- if page_title == Termin -%}
       <script src="{{ url_for('static', filename='platziere_termine.js') }}"></script>
 
       <script src="{{ url_for('static', filename='jquery.timePicker.js') }}"></script>
@@ -52,15 +52,15 @@
       {% if current_user.is_authenticated %}
         <span>{{- current_user.username -}} &nbsp;</span>
         <a href="{{ url_for('auth.logout') }}">abmelden</a>
-      {% elif page_title != "Anmelden" %}
+      {% elif page_title != Anmelden %}
         <a href="{{ url_for('auth.login') }}">anmelden</a>
       {% endif %}
       </p>
     </header>
 
-    {% if page_title == "Karteikarten" %}
+    {% if page_title == Karteikarten %}
       <nav class="flex-container">
-        {#% if page_title != "Anmelden" %#}
+        {#% if page_title != Anmelden %#}
           <p><a href="{{ url_for('patient.index') }}">Karteikarten</a></p>
 
           <p><a target="_blank" href="{{ url_for('rechnung.index') }}">Rechnungen</a></p>

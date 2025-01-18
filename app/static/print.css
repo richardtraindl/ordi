@@ -1,0 +1,46 @@
+
+* { 
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  font-size: 11pt; 
+  font-family: 'Arial';
+}
+
+@page { size: A4; margin: 2.5cm 2.5cm 2.5cm 2.2cm; }
+
+.header, .header-space {
+  height: 3.4cm;
+}
+  
+.footer, .footer-space {
+  height: 0.9cm;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 2.3cm;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+}
+
+header { 
+  display: grid; 
+  grid-template-columns: max-content max-content;
+  grid-auto-flow: row;
+  align-items: center;
+  vertical-align: middle;
+}
+p.logo { text-align: center; font-size: 11pt;}
+
+img.logo { display: block; width: 2.2cm; padding-left: 0.1cm }
+
+footer p { text-align: left; font-size: 10pt; font-style: italic; padding-top: 0.3cm }
+
+pre { white-space: pre-wrap; word-wrap: break-word; }
+

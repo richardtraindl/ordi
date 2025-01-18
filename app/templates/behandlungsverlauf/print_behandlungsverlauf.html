@@ -1,0 +1,36 @@
+
+{% extends 'print_base.html' %}
+
+{% block title %}
+  Behandlungsverlauf
+{% endblock %}
+
+
+{% block content %}
+  <div style="margin-bottom: 1.5cm">
+    {{- bv.person.anredecode|mapanrede -}}<br>
+    {{- bv.person.vorname -}} {{- bv.person.familienname -}} {{- bv.person.titel -}}<br>
+    {{- bv.person.adr_strasse -}}<br>
+    {{- bv.person.adr_plz -}} &nbsp {{- bv.person.adr_ort -}}
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto max-content; margin-bottom: 0.2cm">
+    <p>
+      Patient: &nbsp; {{- bv.tier.tiername -}} &nbsp; {{- bv.tier.tierart -}}
+      {%- if bv.tier.geburtsdatum -%}
+        ,&nbsp;geb. &nbsp; {{- bv.tier.geburtsdatum|dt -}}
+      {%- endif -%}
+    </p>
+    <p>
+      {{- bv.datum|dt -}}
+    </p>
+  </div>
+
+  <p style="margin-bottom: 0.8cm">
+    Diagnose: &nbsp; {{- bv.diagnose -}}
+  </p>
+
+  <p>
+    <pre>{{- bv.behandlung -}}</pre>
+  </p>
+{% endblock %}

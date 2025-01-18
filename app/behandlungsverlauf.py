@@ -4,11 +4,11 @@ from datetime import datetime, date, timedelta
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, make_response
 from werkzeug.exceptions import abort
 from sqlalchemy import func, distinct, or_, and_
+from flask_weasyprint import HTML, render_pdf
 from flask_login import login_required
 from app import app, db
 from app.models import *
 from .reqhelper import *
-from .createpdf import *
 from .values import *
 from .util.helper import *
 
@@ -105,24 +105,18 @@ def show(behandlungsverlauf_id):
         behandlungsverlauf=behandlungsverlauf, page_title="Behandlungsverlauf")
 
 
-@bp.route('/<int:behandlungsverlauf_id>/download', methods=('GET', 'POST'))
+@bp.route('/<int:behandlungsverlauf_id>/download', methods=('GET',))
 @login_required
 def download(behandlungsverlauf_id):
     behandlungsverlauf = db.session.query(Behandlungsverlauf).get(behandlungsverlauf_id)
 
-    byte_string = create_behandlungsverlauf_pdf(behandlungsverlauf)
+    html = render_template('behandlungsverlauf/print_behandlungsverlauf.html', bv=behandlungsverlauf)
 
     name = filter_bad_chars(behandlungsverlauf.person.familienname + \
                 "_" + behandlungsverlauf.person.vorname)
     filename = str(behandlungsverlauf.id) + "_behandlungsverlauf_fuer_" + name + ".pdf"
 
-    response = make_response(byte_string)
-
-    response.headers.set('Content-Disposition', 'attachment', filename=filename)
-
-    response.headers.set('Content-Type', 'application/pdf')
-
-    return response
+    return render_pdf(HTML(string=html), stylesheets=None, download_filename=filename)
 
 
 @bp.route('/<int:behandlungsverlauf_id>/delete', methods=('GET',))
