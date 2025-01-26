@@ -7,14 +7,12 @@
 
 
 {% block content %}
-  <div style="margin-bottom: 1.5cm">
-    {{- bv.person.anredecode|mapanrede -}}<br>
-    {{- bv.person.vorname -}} {{- bv.person.familienname -}} {{- bv.person.titel -}}<br>
-    {{- bv.person.adr_strasse -}}<br>
-    {{- bv.person.adr_plz -}} &nbsp {{- bv.person.adr_ort -}}
-  </div>
 
-  <div style="display: grid; grid-template-columns: auto max-content; margin-bottom: 0.2cm">
+  {% with person=bv.person %}
+    {% include '_print_anrede.html' %}
+  {% endwith %}
+
+  <div style="display: flex; grid-template-columns: auto max-content; margin-bottom: 0.2cm">
     <p>
       Patient: &nbsp; {{- bv.tier.tiername -}} &nbsp; {{- bv.tier.tierart -}}
       {%- if bv.tier.geburtsdatum -%}

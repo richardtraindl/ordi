@@ -4,12 +4,12 @@ from datetime import datetime
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for, make_response
 from werkzeug.exceptions import abort
 from sqlalchemy import func, distinct, or_, and_
+from flask_weasyprint import HTML, render_pdf
 from flask_login import login_required
 from app import app, db
 from app.models import *
-from .reqhelper import *
-from .createpdf import *
 from .values import *
+from .util.reqhelper import *
 
 
 bp = Blueprint('abfrage', __name__, url_prefix='/abfrage')
@@ -156,12 +156,11 @@ def index():
                             Behandlung.datum >= von_datum, Behandlung.datum <= bis_datum) \
                     .order_by(Person.familienname.asc()).all()
 
-                byte_string = create_etiketten_pdf(personen)
-                response = make_response(byte_string)
                 filename = abfrage + "_etiketten.pdf"
-                response.headers.set('Content-Disposition', 'attachment', filename=filename)
-                response.headers.set('Content-Type', 'application/pdf')
-                return response
+
+                html = render_template('abfragen/print_etiketten.html', personen=personen)
+
+                return render_pdf(HTML(string=html), stylesheets=None, download_filename=filename)
             else:
                 query = db.session.query(Tierhaltung, Person, Tier) \
                     .join(Tierhaltung.person) \
@@ -229,12 +228,11 @@ def index():
         tierhaltungen = []
 
     if(output == "bericht-drucken"):
-        byte_string = create_abfrage_pdf(abfrage, kriterium1, kriterium2, tierhaltungen)
-        response = make_response(byte_string)
         filename = abfrage + "_bericht.pdf"
-        response.headers.set('Content-Disposition', 'attachment', filename=filename)
-        response.headers.set('Content-Type', 'application/pdf')
-        return response
+
+        html = render_template('abfragen/print_index.html', abfrage=abfrage, kriterium1=kriterium1, kriterium2=kriterium2, tierhaltungen=tierhaltungen)
+
+        return render_pdf(HTML(string=html), stylesheets=None, download_filename=filename)
     else:
         return render_template("abfragen/index.html", abfragen=lst_abfragen, 
             abfrage=abfrage, kriterium1=kriterium1, kriterium2=kriterium2, 

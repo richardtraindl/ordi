@@ -7,9 +7,10 @@ from sqlalchemy import func, distinct, or_, and_
 from flask_login import login_required
 from app import app, db
 from app.models import *
-from .reqhelper import *
 from .values import *
+from .util.reqhelper import *
 from .util.helper import *
+
 
 bp = Blueprint('patient', __name__, url_prefix='/patient')
 
@@ -109,8 +110,7 @@ def create():
         person = Person()
         tier = Tier()
         return render_template('patient/create.html', person=person, 
-            tier=tier, anredewerte=anredewerte, geschlechtswerte=geschlechtswerte, 
-            page_title="Neue Karteikarte", ref=request.referrer)
+            tier=tier, anredewerte=anredewerte, geschlechtswerte=geschlechtswerte, ref=request.referrer, page_title="Neue Karteikarte")
 
 
 @bp.route('/<int:id>/show', methods=('GET',))
@@ -377,7 +377,7 @@ def save_behandlungen(id):
 
             return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen, 
                       datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
-                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=errors[-1], page_title="Karteikarte")
+                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, page_title="Karteikarte", error=errors[-1])
 
     return redirect(url_for('patient.show', id=id))
 

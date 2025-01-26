@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Abfragen</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
+  </head>
+
+  <body>
+
+    <table>
+      <thead>
+        <tr>
+          <td>
+            <div class="abfrage-header-space">&nbsp;</div>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="content">
+              <table>
+                <thead>
+                  <tr>
+                    <td style="font-weight: bold;">Familienname</td>
+                    <td style="font-weight: bold;">Tiername</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {%- for tierhaltung in tierhaltungen -%}
+                  <tr>
+                    <td>{{- tierhaltung.Person.familienname -}}</td>
+                    <td>{{- tierhaltung.Tier.tiername -}}</td>
+                  </tr>
+                  {%- endfor -%}
+                <tbody>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="abfrage-header">
+      <h2 style="font-size: 14pt">
+        {%- if kriterium2 -%}
+          Abfrage: &nbsp; {{ abfrage }}, &nbsp; {{ kriterium1 }} &nbsp; - &nbsp; {{ kriterium2 }}
+        {%- else -%}
+          Abfrage: &nbsp; {{ abfrage }}, &nbsp; {{ kriterium1 }}
+        {%- endif -%}
+      </h2>
+    </div>
+
+  </body>
+</html>

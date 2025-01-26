@@ -5,12 +5,12 @@ from flask import Blueprint, flash, g, redirect, render_template, request, url_f
 from werkzeug.exceptions import abort
 from sqlalchemy import func, distinct, or_, and_
 from sqlalchemy.exc import SQLAlchemyError
+from flask_weasyprint import HTML, render_pdf
 from flask_login import login_required
 from app import app, db
 from app.models import *
-from .reqhelper import *
-from .createpdf import *
 from .values import *
+from .util.reqhelper import *
 from .util.helper import *
 
 
@@ -240,18 +240,12 @@ def download(rechnung_id):
 
     rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung_id).all()
 
-    byte_string = create_rechnung_pdf(rechnung, rechnungszeilen)
+    html = render_template('rechnung/print_rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen)
 
     name = filter_bad_chars(rechnung.person.familienname + "_" + rechnung.person.vorname)
     filename = str(rechnung.id) + "_rechnung_fuer_" + name + ".pdf"
 
-    response = make_response(byte_string)
-
-    response.headers.set('Content-Disposition', 'attachment', filename=filename)
-
-    response.headers.set('Content-Type', 'application/pdf')
-
-    return response
+    return render_pdf(HTML(string=html), stylesheets=None, download_filename=filename)
 
 
 @bp.route('/<int:rechnung_id>/delete', methods=('GET',))

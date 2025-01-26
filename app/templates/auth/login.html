@@ -1,12 +1,9 @@
 
-{% if request.MOBILE %}
-  {% extends 'mobile_base.html' %}
-{% else %}
-  {% extends 'base.html' %}
-{% endif %}
+{% extends 'base.html' %}
+
 
 {% block title %}
-  Anmelden
+  {{- page_title -}}
 {% endblock %}
 
 

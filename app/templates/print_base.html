@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>{% block title %}{% endblock %}</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
   </head>
 
@@ -32,9 +34,15 @@
 
     <div class="header">{% include '_print_header.html' %}</div>
     
-    {%- if page_title == Behandlungsverlauf -%}
-      <div class="footer">{% include '_print_footer_kontakt.html' %}</div>
-    {% endif %}
+    <div class="footer">
+      {%- if page_title == Rechnung -%}
+        {% include '_print_footer_bank.html' %}
+        {% include '_print_footer_kontakt.html' %}
+      {%- else -%}
+        {% include '_print_footer_kontakt.html' %}
+      {%- endif -%}
+    </div>
+
   </body>
 </html>
 

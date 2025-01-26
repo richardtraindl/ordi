@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Etiketten</title>
+
+    <style>
+      * { 
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-weight: normal;
+          font-size: 11pt; 
+          font-family: 'Arial';
+      }
+      @page { size: A4; margin: 0.87cm 1cm 1cm 1cm; }
+    </style>
+  </head>
+  <body>
+
+    <div style="display: grid; grid-template-columns: auto auto auto;">
+    {%- for person in personen -%}
+      <div style="margin-bottom: 1.5cm">
+        <p>{{- person.anredecode|mapanrede -}} &nbsp {{- person.titel -}}</p>
+        <p>{{- person.familienname -}} &nbsp {{- person.vorname -}}</p>
+        <p>{{- person.adr_strasse -}}</p>
+        <p>{{- person.adr_plz -}} &nbsp {{- person.adr_ort -}}</p>
+      </div>
+    {%- endfor -%}
+    </div>
+
+  </body>
+</html>

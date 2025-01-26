@@ -1,0 +1,80 @@
+
+{% extends 'print_base.html' %}
+
+{% block title %}
+  Rechnung
+{% endblock %}
+
+
+{% block content %}
+
+  {% with person=rechnung.person %}
+    {% include '_print_anrede.html' %}
+  {% endwith %}
+
+  <div style="margin-bottom: 0.8cm">
+    <p style="font-weight: bold;">Rechnung: &nbsp; {{- rechnung.jahr -}} &nbsp; / &nbsp; {{- rechnung.lfnr -}}</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: auto max-content; margin-bottom: 1cm">
+    <p>
+      Patient: &nbsp; {{- rechnung.tier.tiername -}} &nbsp; {{- rechnung.tier.tierart -}}
+      {%- if rechnung.tier.geburtsdatum -%}
+        ,&nbsp;geb. &nbsp; {{- rechnung.tier.geburtsdatum|dt -}}
+      {%- endif -%}
+      <br>
+      Chip: &nbsp; {{- rechnung.tier.chip_nummer -}}<br>
+      Diagnose: &nbsp; {{- rechnung.diagnose -}}
+    </p>
+    <p>
+      {{- rechnung.datum|dt -}}
+    </p>
+  </div>
+
+  <div style="margin-bottom: 0.7cm">
+    <p>Für tierärztliche Leistung und Medikamente erlaube ich mir zu berechnen.</p>
+  </div>
+
+  <table>
+    {%- for rzeile in rechnungszeilen -%}
+      <tr style="margin-bottom: 0.4cm">
+        <td>{{- rzeile.datum -}}</td>
+        <td>{{- rzeile.artikel -}}</td>
+        <td style="text-align: right">{{- rzeile.betrag|currency -}}</td>
+      </tr>
+    {%- endfor -%}
+  </table>
+
+  <hr>
+  
+  <table style="margin-bottom: 1.2cm">
+    <tr style="margin-bottom: 0.2cm">
+      <td>Summe netto EUR</td>
+      <td style="text-align: right">{{- rechnung.netto_summe|currency -}}</td>
+    </tr>
+    <tr style="margin-bottom: 0.2cm">
+      <td>10% Umsatzsteuer</td>
+      <td style="text-align: right">{{- rechnung.steuerbetrag_zehn|currency -}}</td>
+    </tr>
+    <tr style="margin-bottom: 0.2cm">
+      <td>13% Umsatzsteuer</td>
+      <td style="text-align: right">{{- rechnung.steuerbetrag_dreizehn|currency -}}</td>
+    </tr>
+    <tr style="margin-bottom: 0.2cm">
+      <td>20% Umsatzsteuer</td>
+      <td style="text-align: right">{{- rechnung.steuerbetrag_zwanzig|currency -}}</td>
+    </tr>
+    <tr style="margin-bottom: 0.2cm">
+      <td colspan="2"><hr></td>
+    </tr>
+    <tr>
+      <td>Endsumme Brutto EUR</td>
+      <td style="text-align: right">{{- rechnung.brutto_summe|currency -}}</td>
+    </tr>
+  </table>
+
+  <div>
+    <p>Zahlung: &nbsp; {{- rechnung.bezahlung -}}</p>
+  </div>
+{% endblock %}
+

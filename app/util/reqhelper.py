@@ -2,8 +2,8 @@
 from datetime import datetime
 
 from flask import request
-from .values import *
-from .models import *
+from ..values import *
+from ..models import *
 
 
 def fill_and_validate_tier(tier, request):

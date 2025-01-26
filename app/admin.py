@@ -1,11 +1,9 @@
 
 import os
 from datetime import datetime, date
-#import gdown
 
 from flask import Flask, Blueprint, flash, g, redirect, render_template, request, url_for
 import click
-
 from . import db
 from .models import *
 
@@ -17,98 +15,77 @@ bp = Blueprint('admin', __name__, url_prefix='/admin')
 @click.argument("path")
 def import_tier(path):
     filename = 'tblTier.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_tier(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-person")
 @click.argument("path")
 def import_person(path):
     filename = 'tblPerson.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_person(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-adresse")
 @click.argument("path")
 def import_adresse(path):
     filename = 'tblAdresse.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_adresse(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-kontakt")
 @click.argument("path")
 def import_kontakt(path):
     filename = 'tblKontakt.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_kontakt(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-tierhaltung")
 @click.argument("path")
 def import_tierhaltung(path):
     filename = 'tblTierhaltung.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_tierhaltung(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-behandlung")
 @click.argument("path")
 def import_behandlung(path):
     filename = 'tblBehandlung.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_behandlung(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-impfung")
 @click.argument("path")
 def import_impfung(path):
     filename = 'tblImpfung.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_impfung(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-behandlungsverlauf")
 @click.argument("path")
 def import_behandlungsverlauf(path):
     filename = 'tblBehandlungsverlauf.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_behandlungsverlauf(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-rechnung")
 @click.argument("path")
 def import_rechnung(path):
     filename = 'tblRechnung.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_rechnung(path + "/" + filename)
-    #os.remove(filename)
+
 
 @bp.cli.command("import-rechnungszeile")
 @click.argument("path")
 def import_rechnungszeile(path):
     filename = 'tblRechnungszeile.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_rechnungszeile(path + "/" + filename)
-    #os.remove(filename)
 
 
 @bp.cli.command("import-termin")
 @click.argument("path")
 def import_termin(path):
     filename = 'tblTermin.txt'
-    #gdown.download(url, filename, quiet=False) 
     import_termin(path + "/" + filename)
-    #os.remove(filename)
 
 
 def clean_str_file(str_file, dchar, dcnt):
