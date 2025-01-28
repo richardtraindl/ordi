@@ -3,54 +3,54 @@
 <html>
   <head>
     <title>Abfragen</title>
+    
+    <style>
+        * { 
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-weight: normal;
+          font-size: 11pt; 
+          font-family: 'Arial';
+        }
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
+        @page { size: A4; margin: 2.1cm 2.1cm 1.2cm 2.1cm; }
+
+        table { width: 100%; table-layout: fixed; overflow-wrap: break-word; }
+
+        table, td { border: 1px solid; border-collapse: collapse; }
+    </style>
   </head>
 
   <body>
 
-    <table>
-      <thead>
-        <tr>
-          <td>
-            <div class="abfrage-header-space">&nbsp;</div>
-          </td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="content">
-              <table>
-                <thead>
-                  <tr>
-                    <td style="font-weight: bold;">Familienname</td>
-                    <td style="font-weight: bold;">Tiername</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  {%- for tierhaltung in tierhaltungen -%}
-                  <tr>
-                    <td>{{- tierhaltung.Person.familienname -}}</td>
-                    <td>{{- tierhaltung.Tier.tiername -}}</td>
-                  </tr>
-                  {%- endfor -%}
-                <tbody>
-              </table>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="abfrage-header">
-      <h2 style="font-size: 14pt">
+    <div>
+      <h2 style="font-size: 14pt; margin-bottom: 0.8cm;">
         {%- if kriterium2 -%}
           Abfrage: &nbsp; {{ abfrage }}, &nbsp; {{ kriterium1 }} &nbsp; - &nbsp; {{ kriterium2 }}
         {%- else -%}
           Abfrage: &nbsp; {{ abfrage }}, &nbsp; {{ kriterium1 }}
         {%- endif -%}
       </h2>
+    </div>
+
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <td style="font-weight: bold;">Familienname</td>
+            <td style="font-weight: bold;">Tiername</td>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for tierhaltung in tierhaltungen -%}
+          <tr>
+            <td>{{- tierhaltung.Person.familienname -}}</td>
+            <td>{{- tierhaltung.Tier.tiername -}}</td>
+          </tr>
+          {%- endfor -%}
+        <tbody>
+      </table>
     </div>
 
   </body>

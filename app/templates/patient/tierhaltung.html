@@ -41,6 +41,9 @@
     </table>
 
     <form method="post" action="{{ url_for('patient.save_behandlungen', id=tierhaltung.id) }}">
+
+      <input type="hidden" name="tierhaltung_id" id="tierhaltung_id" value="{{- tierhaltung.id or '' -}}">
+
       <div id="scroller" style="max-height: calc(100vh - 31.5em); overflow-y: scroll; overflow-x: hidden;">
         <table class="records">
           <tbody>
@@ -150,7 +153,15 @@
 
       <div class="small-gap"></div>
 
-      <div><input class="btn" type="submit" value="Speichern"></div>
+      <div class="flex-container">
+        <p><input class="btn" type="submit" value="Speichern"></p>
+      
+        {% if tierhaltung and tierhaltung.id %}
+          <p><a id="print" class="btn" href="#">Karteikarte drucken</a></p>
+        {% else %}
+          <p><a id="print" class="btn grayed" href="#">Karteikarte drucken</a></p>
+        {% endif %}
+      </div>
     </form>
 
     <p style="display: none">
@@ -350,6 +361,14 @@
             $dialog_impfungen.dialog('open');
             // prevent the default action, e.g., following a link
             return false;
+        });
+
+        $('#print').click(function(){ 
+          if($(this).hasClass('grayed') == false){
+            var tierhaltung_id = $('#tierhaltung_id').val();
+            window.location = "/patient/" + tierhaltung_id.toString() + "/download";
+          }
+          return false; 
         });
 
         hinweis_speichern();

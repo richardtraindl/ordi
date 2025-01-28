@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for, send_file
 from werkzeug.exceptions import abort
 from sqlalchemy import func, distinct, or_, and_
+from flask_weasyprint import HTML, render_pdf
 from flask_login import login_required
 from app import app, db
 from app.models import *
@@ -429,4 +430,21 @@ def async_read_behandlung(behandlung_id):
                  'impfungen' : str_impfungen }
     return {}
 # behandlung
+
+
+@bp.route('/<int:tierhaltung_id>/download', methods=('GET', 'POST'))
+@login_required
+def download(tierhaltung_id):
+    tierhaltung = Tierhaltung.query.get(tierhaltung_id)
+
+    behandlungen = db.session.query(Behandlung) \
+        .filter(Behandlung.tier_id == tierhaltung.tier.id) \
+        .order_by(Behandlung.datum.asc()).all()
+    
+    html = render_template('patient/print_tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen)
+
+    name = filter_bad_chars(tierhaltung.person.familienname + "_" + tierhaltung.person.vorname)
+    filename = str(tierhaltung.id) + "_karteikarte_fuer_" + name + ".pdf"
+
+    return render_pdf(HTML(string=html), stylesheets=None, download_filename=filename)
 

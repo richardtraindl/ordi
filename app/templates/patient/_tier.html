@@ -26,9 +26,17 @@
 
     <p>Patient</p>
     {% if tier.patient == 0 %}
-      <input type="checkbox" name="patient" value="0" disabled>
+      {%- if print -%}
+        <p>N</p>
+      {% else %}
+        <input type="checkbox" name="patient" value="0" disabled>
+      {% endif %}
     {% else %}
-      <input type="checkbox" name="patient" value="1" checked disabled>
+      {%- if print -%}
+        <p>J</p>
+      {% else %}
+        <input type="checkbox" name="patient" value="1" checked disabled>
+      {% endif %}
     {% endif %}
 
     <p>Viren</p>

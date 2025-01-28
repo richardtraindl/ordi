@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Abfragen</title>
+    
+    <style>
+        * { 
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          font-weight: normal;
+          font-size: 11pt; 
+          font-family: 'Arial';
+        }
+        
+        h2 { font-size: 14pt; margin-bottom: 0.6cm }
+        
+        p { margin-bottom: 0.1cm }
+        
+        .row-grid { 
+            display: inline-grid; 
+            margin: 0; 
+            grid-auto-flow: row; 
+            column-gap: 0.7em; 
+            grid-row-gap: 0.4em; 
+            align-items: center;
+            vertical-align: middle;
+            justify-items: start;
+        }
+
+        @page { size: A4; margin: 2.1cm 2.1cm 1.2cm 2.1cm; }
+    </style>
+  </head>
+
+  <body>
+
+   <h2>Karteikarte</h2>
+
+    <div style="display: grid; grid-template-columns: auto auto;">
+
+      {%- with person=tierhaltung.person, print=1 -%}
+        {%- include 'patient/_person.html' -%}
+      {%- endwith -%}
+
+      {%- with tier=tierhaltung.tier, print=1 -%}
+        {%- include 'patient/_tier.html' -%}
+      {%- endwith -%}
+
+    </div>
+
+    <hr style="height: 1px; border-width: 0; color: Black; background-color: Black; margin: 0.3cm 0 0.3cm 0">
+
+    <div>
+      {%- for behandlung in behandlungen -%}
+        <div style="display: grid; grid-template-columns: max-content auto;">
+          <p>Datum: &nbsp;</p><p>{{- behandlung.datum|dt -}}</p>
+          <p>Gewicht: &nbsp;</p><p>{{- behandlung.gewicht -}}</p>
+          <p>Diagnose: &nbsp;</p><p>{{- behandlung.diagnose -}}</p>
+          <p>Laborwerte1: &nbsp;</p><p>{{- behandlung.laborwerte1 -}}</p>
+          <p>Laborwerte2: &nbsp;</p><p>{{- behandlung.laborwerte2 -}}</p>
+          <p>Arzneien: &nbsp;</p><p>{{- behandlung.arzneien -}}</p>
+          <p>Arzneimittel: &nbsp;</p><p>{{- behandlung.arzneimittel -}}</p>
+          <p>Impfungen: &nbsp;</p>
+          <p>
+            {%- for impfung in behandlung.impfungen -%}
+              {{- impfung.impfungscode|mapimpfung -}} &nbsp;
+            {%- endfor -%}
+          </p>
+        </div>
+        <hr style="height: 1px; border-width: 0; color: Black; background-color: Black; margin: 0.3cm 0 0.3cm 0">
+      {%- endfor -%}
+    </div>
+
+  </body>
+</html>
