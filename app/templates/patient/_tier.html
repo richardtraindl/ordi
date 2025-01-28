@@ -1,48 +1,48 @@
 
   <div class="row-grid" style="margin-right: 40px; grid-template-columns: auto auto;">
     <p>Tiername</p>
-    <p>{{ tier.tiername }}</p>
+    <p>{{- tier.tiername -}}</p>
 
     <p>Tierart</p>
-    <p>{{ tier.tierart }}</p>
+    <p>{{- tier.tierart -}}</p>
 
     <p>Rasse</p>
-    <p>{{ tier.rasse }}</p>
+    <p>{{- tier.rasse -}}</p>
 
     <p>Farbe</p>
-    <p>{{ tier.farbe }}</p>
+    <p>{{- tier.farbe -}}</p>
 
     <p>Geburtsdatum</p>
-    <p>{{ tier.geburtsdatum|dt }}</p>
+    <p>{{- tier.geburtsdatum|fmtdate -}}</p>
 
     <p>Geschlecht</p>
-    <p>{{tier.geschlechtscode|mapgeschlecht }}</p>
+    <p>{{- tier.geschlechtscode|mapgeschlecht -}}</p>
 
     <p>Chip Nummer</p>
-    <p>{{ tier.chip_nummer }}</p>
+    <p>{{- tier.chip_nummer -}}</p>
 
     <p>EU Passnummer</p>
-    <p>{{ tier.eu_passnummer }}</p>
+    <p>{{- tier.eu_passnummer -}}</p>
 
     <p>Patient</p>
-    {% if tier.patient == 0 %}
+    {% if tier.patient == 0 -%}
       {%- if print -%}
         <p>N</p>
-      {% else %}
+      {%- else -%}
         <input type="checkbox" name="patient" value="0" disabled>
-      {% endif %}
-    {% else %}
+      {%- endif -%}
+    {%- else -%}
       {%- if print -%}
         <p>J</p>
-      {% else %}
+      {%- else -%}
         <input type="checkbox" name="patient" value="1" checked disabled>
-      {% endif %}
-    {% endif %}
+      {%- endif -%}
+    {%- endif -%}
 
     <p>Viren</p>
-    <p>{{ tier.viren }}</p>
+    <p>{{- tier.viren -}}</p>
 
     <p>Merkmal</p>
-    <p>{{ tier.merkmal }}</p>
+    <p>{{- tier.merkmal -}}</p>
   </div>
 

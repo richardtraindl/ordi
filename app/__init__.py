@@ -13,7 +13,7 @@ login_manager.login_view = 'auth.login'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/richard/dev/flask/ordi/instance/ordi.sqlite3'
 app.config['SECRET_KEY'] = 'esgibt nichtmehrvielzusagen'
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=30)
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=1440) # 24h
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -40,20 +40,16 @@ app.register_blueprint(kalender.bp)
 from . import admin
 app.register_blueprint(admin.bp)
 
-from .util.filters import mapanrede, mapgeschlecht, mapimpfung, mapartikel, \
-                          conv_curr, filter_supress_none, filter_format_date, filter_format_datetime, \
-                          filter_mformat_date, filter_is_dict, calc_kw, add_days, add_hours, add_mins, \
-                          gib_feiertag
+from .util.filters import mapanrede, mapgeschlecht, mapimpfung, mapartikel, fmtcurrency, fmtdate, supress_none, \
+                          is_dict, calc_kw, add_days, add_hours, add_mins, gib_feiertag
 app.jinja_env.filters['mapanrede'] = mapanrede
 app.jinja_env.filters['mapgeschlecht'] = mapgeschlecht
 app.jinja_env.filters['mapimpfung'] = mapimpfung
 app.jinja_env.filters['mapartikel'] = mapartikel
-app.jinja_env.filters['currency'] = conv_curr
-app.jinja_env.filters['sn'] = filter_supress_none
-app.jinja_env.filters['dt'] = filter_format_date
-app.jinja_env.filters['mdt'] = filter_mformat_date
-app.jinja_env.filters['dttm'] = filter_format_datetime
-app.jinja_env.filters['isdict'] = filter_is_dict
+app.jinja_env.filters['currency'] = fmtcurrency
+app.jinja_env.filters['fmtdate'] = fmtdate
+app.jinja_env.filters['sn'] = supress_none
+app.jinja_env.filters['is_dict'] = is_dict
 app.jinja_env.filters['calc_kw'] = calc_kw
 app.jinja_env.filters['add_days'] = add_days
 app.jinja_env.filters['add_hours'] = add_hours

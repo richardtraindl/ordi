@@ -43,7 +43,7 @@
           <input type="text" size=3 name="lfnr" id="lfnr" class="change" value="{{- rechnung['lfnr'] or rechnung.lfnr|sn -}}" required>
 
           <label for="datum">Ausstellungsdatum</label>
-          <input type="text" size=8 name="datum" id="datum" class="date change" value="{{- rechnung['datum']|dt or rechnung.datum|dt or datum -}}" required>
+          <input type="text" size=8 name="datum" id="datum" class="date change" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}" required>
 
           <label for="ort">Ausstellungsort</label>
           <input type="text" size=10 name="ort" id="ort" class="change" value="{{- rechnung['ort'] or rechnung.ort or ort -}}" required>
@@ -82,7 +82,7 @@
         <table class="records">
           <tbody>
           {% for rz in rechnungszeilen %}
-            {%- if rz|isdict -%}
+            {%- if rz|is_dict -%}
               {% set active = '' %}
               {% set mark = 'error=error' %}
             {% else %}
@@ -95,10 +95,10 @@
                 <input type="hidden" name="rechnung_id[]" {{ active }} value="{{- rechnung['rechnung_id'] or rechnung.id or '' -}}">
                 <input type="hidden" name="rechnungszeile_id[]" {{ active }} value="{{- rz['rechnungszeile_id'] or rz.id -}}">
 
-                <input type="text" style="width: 100%" name="datum[]" class="date change" {{ mark }} {{ active }} value="{{- rz['datum']|dt or rz.datum|dt -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date change" {{ mark }} {{ active }} value="{{- rz['datum']|fmtdate or rz.datum|fmtdate -}}">
               </td>
 
-              {%- if rz|isdict -%}
+              {%- if rz|is_dict -%}
                 {% set artikelcode = rz['artikelcode'] %}
               {%- else -%}
                 {% set artikelcode = rz.artikelcode %}
@@ -127,7 +127,7 @@
                 <input type="hidden" name="rechnung_id[]" value="">
                 <input type="hidden" name="rechnungszeile_id[]" value="">
 
-                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|dt or rechnung.datum|dt or datum -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
               </td>
 
               {% set artikelcode = 0 %}

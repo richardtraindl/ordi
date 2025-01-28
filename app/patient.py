@@ -199,8 +199,7 @@ def create_tier(id):
         return redirect(url_for('patient.show', id=new_tierhaltung.id))
     else:
         tier = Tier()
-        return render_template('patient/create_tier.html', tier=tier, 
-            geschlechtswerte=geschlechtswerte, page_title="Neues Tier")
+        return render_template('patient/create_tier.html', tier=tier, geschlechtswerte=geschlechtswerte, page_title="Neues Tier")
 
 
 @bp.route('/<int:id>/<int:tier_id>/edit_tier', methods=('GET', 'POST'))
@@ -219,11 +218,10 @@ def edit_tier(id, tier_id):
                 geschlechtswerte=geschlechtswerte, page_title="Tier ändern")
         else:
             db.session.commit()
-            return redirect(url_for('patient.show', id=id))
-    else:
-        tier = Tier.query.get(tier_id)
-        return render_template('patient/edit_tier.html', id=id, tier=tier, 
-            geschlechtswerte=geschlechtswerte, page_title="Tier ändern")
+
+    tier = Tier.query.get(tier_id)
+
+    return render_template('patient/edit_tier.html', id=id, tier=tier, geschlechtswerte=geschlechtswerte, page_title="Tier ändern")
 # tier
 
 
@@ -242,15 +240,12 @@ def edit_person(id, person_id):
             flash(error)
             return render_template('patient/edit_person.html', id=id, person=person, 
                 anredewerte=anredewerte, page_title="Person ändern")
-
-        db.session.commit()
-
-        return redirect(url_for('patient.show', id=id))
+        else:
+            db.session.commit()
 
     person = db.session.query(Person).get(person_id)
 
-    return render_template('patient/edit_person.html', id=id, person=person, 
-        anredewerte=anredewerte, page_title="Person ändern")
+    return render_template('patient/edit_person.html', id=id, person=person, anredewerte=anredewerte, page_title="Person ändern")
 # person
 
 

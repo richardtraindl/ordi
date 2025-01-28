@@ -48,7 +48,7 @@
         <table class="records">
           <tbody>
           {%- for behandlung in behandlungen -%}
-            {%- if behandlung|isdict -%}
+            {%- if behandlung|is_dict -%}
               {% set active = '' %}
               {% set mark = 'error=error' %}
             {% else %}
@@ -61,7 +61,7 @@
                  <input type="hidden" name="behandlung_id[]" {{ active }} value="{{- behandlung['behandlung_id'] or behandlung.id -}}">
                 <input type="hidden" name="tier_id[]" {{ active }} value="{{- behandlung['tier_id'] or tierhaltung.tier_id -}}">
 
-                <input type="text" name="datum[]" class="date" {{ mark }} {{ active }} value="{{- behandlung['datum']|dt or behandlung.datum|dt -}}">
+                <input type="text" name="datum[]" class="date" {{ mark }} {{ active }} value="{{- behandlung['datum']|fmtdate or behandlung.datum|fmtdate -}}">
               </td>
 
               <td style="width: 30%">
@@ -94,7 +94,7 @@
 
               <td style="width: 9%">
                 <textarea name="impfungen[]" class="impfungen" readonly {{ mark }} {{ active }}>
-                {%- if behandlung|isdict -%}
+                {%- if behandlung|is_dict -%}
                   {{- behandlung['impfungen'] -}}
                 {%- else -%}
                   {%- for impfung in behandlung.impfungen -%}

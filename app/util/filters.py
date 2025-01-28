@@ -33,7 +33,7 @@ def mapartikel(artikelcode):
     return artikel
 
 
-def conv_curr(amount): 
+def fmtcurrency(amount): 
   import locale 
   locale.setlocale(locale.LC_ALL, 'de_AT.UTF-8')
   try:
@@ -42,14 +42,7 @@ def conv_curr(amount):
       return amount
 
 
-def filter_supress_none(val):
-    if not val is None:
-        return val
-    else:
-        return ""
-
-
-def filter_format_date(val):
+def fmtdate(val):
     if not val is None:
         try:
             if(val.year==1900 and val.month==1 and val.day==1):
@@ -65,27 +58,14 @@ def filter_format_date(val):
         return ""
 
 
-def filter_mformat_date(val):
+def supress_none(val):
     if not val is None:
-        if(val.year==1900 and val.month==1 and val.day==1):
-            return ""
-        else:
-            try:
-                return val.strftime("%d.%m. %Y")
-            except:
-                return ""
+        return val
     else:
         return ""
 
 
-def filter_format_datetime(val):
-    if not val is None:
-        return val.strftime("%d.%m.%Y, %H:%M")
-    else:
-        return ""
-
-
-def filter_is_dict(val):
+def is_dict(val):
     return isinstance(val, dict)
 
 

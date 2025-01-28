@@ -6,7 +6,7 @@
     {%- endif -%}
 
     {%- if tier.geburtsdatum -%}
-      ,&nbsp;{{- tier.geburtsdatum|dt -}}
+      ,&nbsp;{{- tier.geburtsdatum|fmtdate -}}
     {%- endif -%}
 
     {%- if tier.geschlechtscode -%}

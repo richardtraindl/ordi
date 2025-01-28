@@ -20,14 +20,14 @@
     <p>
       Patient: &nbsp; {{- rechnung.tier.tiername -}} &nbsp; {{- rechnung.tier.tierart -}}
       {%- if rechnung.tier.geburtsdatum -%}
-        ,&nbsp;geb. &nbsp; {{- rechnung.tier.geburtsdatum|dt -}}
+        ,&nbsp;geb. &nbsp; {{- rechnung.tier.geburtsdatum|fmtdate -}}
       {%- endif -%}
       <br>
       Chip: &nbsp; {{- rechnung.tier.chip_nummer -}}<br>
       Diagnose: &nbsp; {{- rechnung.diagnose -}}
     </p>
     <p>
-      {{- rechnung.datum|dt -}}
+      {{- rechnung.datum|fmtdate -}}
     </p>
   </div>
 

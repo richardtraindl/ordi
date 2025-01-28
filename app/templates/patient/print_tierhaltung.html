@@ -54,7 +54,7 @@
     <div>
       {%- for behandlung in behandlungen -%}
         <div style="display: grid; grid-template-columns: max-content auto;">
-          <p>Datum: &nbsp;</p><p>{{- behandlung.datum|dt -}}</p>
+          <p>Datum: &nbsp;</p><p>{{- behandlung.datum|fmtdate -}}</p>
           <p>Gewicht: &nbsp;</p><p>{{- behandlung.gewicht -}}</p>
           <p>Diagnose: &nbsp;</p><p>{{- behandlung.diagnose -}}</p>
           <p>Laborwerte1: &nbsp;</p><p>{{- behandlung.laborwerte1 -}}</p>

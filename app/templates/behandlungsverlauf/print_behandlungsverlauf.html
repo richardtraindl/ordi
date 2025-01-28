@@ -16,11 +16,11 @@
     <p>
       Patient: &nbsp; {{- bv.tier.tiername -}} &nbsp; {{- bv.tier.tierart -}}
       {%- if bv.tier.geburtsdatum -%}
-        ,&nbsp;geb. &nbsp; {{- bv.tier.geburtsdatum|dt -}}
+        ,&nbsp;geb. &nbsp; {{- bv.tier.geburtsdatum|fmtdate -}}
       {%- endif -%}
     </p>
     <p>
-      {{- bv.datum|dt -}}
+      {{- bv.datum|fmtdate -}}
     </p>
   </div>
 
