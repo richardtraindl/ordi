@@ -3,6 +3,6 @@
 flask_login
 flask_sqlalchemy
 flask_migrate
-fpdf <> flask_weasyprint
+flask_weasyprint
 openpyxl
 python-dotenv-1.0.1

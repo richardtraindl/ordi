@@ -198,8 +198,10 @@ def create_tier(id):
         db.session.commit()
         return redirect(url_for('patient.show', id=new_tierhaltung.id))
     else:
+        tierhaltung = Tierhaltung.query.get(id)
+        person = tierhaltung.person
         tier = Tier()
-        return render_template('patient/create_tier.html', tier=tier, geschlechtswerte=geschlechtswerte, page_title="Neues Tier")
+        return render_template('patient/create_tier.html', person=person, tier=tier, geschlechtswerte=geschlechtswerte, page_title="Neues Tier")
 
 
 @bp.route('/<int:id>/<int:tier_id>/edit_tier', methods=('GET', 'POST'))

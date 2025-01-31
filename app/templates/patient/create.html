@@ -11,6 +11,7 @@
     <form method="post">
       <div class="row-grid" style="grid-template-columns: auto auto;">
         {% include 'patient/_form_for_person.html' %}
+
         {% include 'patient/_form_for_tier.html' %}
       </div>
 
@@ -18,6 +19,8 @@
 
       <div class="flex-container">
         <p><input type="submit" value="Speichern"></p>
+
+        <p><a class="btn" href="#" onclick = "javascript:self.close();">Abbrechen</a></p>
       </div>
     </form>
 

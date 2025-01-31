@@ -100,7 +100,7 @@ def create(tierhaltung_id):
 
         rechnungszeilen = []
         for reqrechnungszeile in reqrechnungszeilen:
-            rechnungszeile, error = fill_and_validate_rechnungszeile(rechnung, None, reqrechnungszeile)
+            rechnungszeile, error = fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile)
             if(len(error) > 0):
                 flash(error)
                 return render_template('rechnung/rechnung.html', tierhaltung_id=tierhaltung_id, rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, person=tierhaltung.person, tier=tierhaltung.tier, artikelwerte=artikelwerte,  page_title="Rechnung")

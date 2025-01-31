@@ -9,12 +9,18 @@
 
 {% block content %}
     <form method="post">
-      {% include 'patient/_form_for_tier.html' %}
+      <div class="row-grid" style="grid-template-columns: auto auto;">
+        {%- include 'patient/_person.html' -%}
+
+        {%- include 'patient/_form_for_tier.html' -%}
+      </div>
 
       <div class="small-gap"></div>
 
       <div class="flex-container">
-        <p><input type="submit" value="speichern"></p>
+        <p><input type="submit" value="Speichern"></p>
+
+        <p><a class="btn" href="#" onclick = "javascript:self.close();">Abbrechen</a></p>
       </div>
     </form>
 
