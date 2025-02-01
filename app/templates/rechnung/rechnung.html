@@ -148,21 +148,17 @@
       <div class="small-gap"></div>
 
       <div class="flex-container">
-        
         <p><input type="submit" value="Rechnung speichern"></p>
         
-      {% if rechnung and rechnung.id %}
-        <p><a id="print" class="btn" href="#">Rechnung drucken</a></p>
+        {% if rechnung and rechnung.id %}
+         <p><a id="print" class="btn" href="#">Rechnung drucken</a></p>
 
-        <p><a id="als_neue_rechnung" class="btn" href="#">neue Rechnung</a></p>
-      {% else %}
-        <p><a id="print" class="btn grayed" href="#">Rechnung drucken</a></p>
+         <p><a id="als_neue_rechnung" class="btn" href="#">neue Rechnung</a></p>
+        {% else %}
+         <p><a id="print" class="btn grayed" href="#">Rechnung drucken</a></p>
 
-        <p><a  id="als_neue_rechnung" class="btn grayed" href="#">neue Rechnung</a></p>
-      {% endif %}
-
-        <p><a class="btn" href="#" onclick = "javascript:self.close();">Abbrechen</a></p>
-
+         <p><a  id="als_neue_rechnung" class="btn grayed" href="#">neue Rechnung</a></p>
+        {% endif %}
       </div>
 
     </form>

@@ -30,7 +30,7 @@
     {% if behandlungsverlauf and behandlungsverlauf.id %}
       <form method="post" action="{{ url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behandlungsverlauf.id) }}">
     {% else %}
-      <form method="post" action="{{ url_for('behandlungsverlauf.create', id=id) }}">
+      <form method="post" action="{{ url_for('behandlungsverlauf.create', tierhaltung_id=tierhaltung_id) }}">
     {% endif %}
     
       <input type="hidden" name="behandlungsverlauf_id" id="behandlungsverlauf_id" value="{{- request.form['behandlungsverlauf_id'] or behandlungsverlauf.id -}}">
@@ -49,17 +49,13 @@
       <div class="small-gap"></div>
 
       <div class="flex-container">
-
         <p><input type="submit" value="Behandlungsverlauf speichern"></p>
 
-      {% if changed == False %}
-        <p><a id="print" class="btn" href="#">Behandlungsverlauf drucken</a></p>
-      {% else %}
-        <p><a id="print" class="btn grayed" href="#">Behandlungsverlauf drucken</a></p>
-      {% endif %}
-
-        <p><a class="btn" href="#" onclick = "javascript:self.close();">Abbrechen</a></p>
-
+        {% if changed == False %}
+         <p><a id="print" class="btn" href="#">Behandlungsverlauf drucken</a></p>
+        {% else %}
+         <p><a id="print" class="btn grayed" href="#">Behandlungsverlauf drucken</a></p>
+        {% endif %}
       </div>
 
     </form>

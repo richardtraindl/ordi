@@ -47,10 +47,10 @@ def index():
         jahr=str_jahr, page_title="Behandlungsverläufe")
 
 
-@bp.route('/<int:id>/create', methods=('GET', 'POST'))
+@bp.route('/<int:tierhaltung_id>/create', methods=('GET', 'POST'))
 @login_required
-def create(id):
-    tierhaltung = db.session.query(Tierhaltung).get(id)
+def create(tierhaltung_id):
+    tierhaltung = db.session.query(Tierhaltung).get(tierhaltung_id)
 
     datum = date.today().strftime("%d.%m.%Y")
 
@@ -58,7 +58,7 @@ def create(id):
         behandlungsverlauf, error = fill_and_validate_behandlungsverlauf(None, request)
         if(len(error) > 0):
             flash(error)
-            return render_template('behandlungsverlauf/behandlungsverlauf.html', id=id, 
+            return render_template('behandlungsverlauf/behandlungsverlauf.html', tierhaltung_id=tierhaltung_id, 
                 person=tierhaltung.person, tier=tierhaltung.tier, 
                 behandlungsverlauf=behandlungsverlauf, changed=True, 
                 datum=datum, page_title="Behandlungsverlauf")
@@ -70,7 +70,7 @@ def create(id):
         return redirect(url_for('behandlungsverlauf.edit', behandlungsverlauf_id=behandlungsverlauf.id))
     else:
         behandlungsverlauf = Behandlungsverlauf()
-        return render_template('behandlungsverlauf/behandlungsverlauf.html', id=id, 
+        return render_template('behandlungsverlauf/behandlungsverlauf.html', tierhaltung_id=tierhaltung_id, 
             person=tierhaltung.person, tier=tierhaltung.tier, 
             behandlungsverlauf=behandlungsverlauf, datum=datum, changed=False, 
             page_title="Behandlungsverlauf")

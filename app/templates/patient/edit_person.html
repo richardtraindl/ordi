@@ -15,9 +15,19 @@
         <div class="small-gap"></div>
 
         <div class="flex-container">
-            <input type="submit" value="Speichern" style="margin-right: 20px;">
-
-            <p><a class="btn" href="{{ url_for('patient.show', id=id) }}">Abbrechen</a></p>
+          <input type="submit" value="Speichern" style="margin-right: 20px;">
         </div>
     </form>
+
+    <script>
+      $(document).ready(function(){
+
+        hinweis_speichern();
+
+      });
+    </script>
+
+
+
+
 {% endblock %}

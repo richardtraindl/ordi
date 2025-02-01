@@ -9,7 +9,6 @@
       $(this).parents("form:first").find(":submit").click(function(){ 
         $(window).off("beforeunload");
       });
-
     });
     
     $(".labor, .impfungen, .date").blur(function(e){
