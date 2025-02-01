@@ -1,25 +1,31 @@
 
   function hinweis_speichern(){
-    $("form").on("change", ":input", function(e){
-      $(window).on('beforeunload', function(e){
-        return "Es gibt ungespeicherte Änderungen.";
-      });
 
-      // Verhindern, dass ein Submit-Button (also z.B. "Speichern") auch den Hinweis hervorruft.
-      $(this).parents("form:first").find(":submit").click(function(){ 
-        $(window).off("beforeunload");
-      });
+    $('body').on('change keyup keydown', 'input, textarea, select', function(e){
+      $(this).addClass('changed-input');
     });
-    
-    $(".labor, .impfungen, .date").blur(function(e){
-      if($(this).val().length > 0) {
-        $(window).on('beforeunload', function(e){
-          return "Es gibt ungespeicherte Änderungen.";
-        });
 
-        // Verhindern, dass ein Submit-Button (also z.B. "Speichern") auch den Hinweis hervorruft.
-        $(this).parents("form:first").find(":submit").click(function() { $(window).off("beforeunload"); });
+    $('body').on('change blur', '.date', function(e){
+      $(this).addClass('changed-input');
+    });
+
+    $(window).on('beforeunload', function(){
+      if($('.changed-input').length){
+        return 'You haven\'t saved your changes.';
       }
+    });
+        
+    // Verhindern, dass ein Submit-Button (also z.B. "Speichern") auch den Hinweis hervorruft.
+    $('input[type="submit"]').click(function(){ 
+      $(window).off("beforeunload"); 
     });
 
   }
+  
+  
+  
+
+    
+
+
+

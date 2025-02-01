@@ -336,7 +336,6 @@
         });
 
         $('.impfungen').click(function(){
-            console.log("impfungen: " + $(this).val());
             impfungen_text_feld = this;
             var impfungen = $(this).val().split(",");
             var body = "<select id='dialog-impfungswerte' style='height: 240px' multiple>"
