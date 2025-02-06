@@ -110,6 +110,8 @@
                 {% set artikelcode = rz.artikelcode %}
               {%- endif -%}
 
+              {%- set edit = '' -%}
+
               {% with idx = loop.index - 1 %}
                 <td style="width: 20%">
                  {% include 'rechnung/_select_for_artikel.html' %}
@@ -142,20 +144,26 @@
                 <input type="hidden" name="rechnung_id[]" value="">
                 <input type="hidden" name="rechnungszeile_id[]" value="">
 
-                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
               </td>
 
               {%- set artikelcode = 0 -%}
-              {%- set active = True -%}
+              <!-- {% set active = True %} -->
+              {%- set active = '' -%}
+              {%- set edit = 'id=edit' -%}
               {% with idx = None %}
                 <td style="width: 20%">
                  {% include 'rechnung/_select_for_artikel.html' %}
                 </td>
               {% endwith %}         
 
-              <td style="width: 54%"><textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
+              <td style="width: 54%">
+                <textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea>
+              </td>
 
-              <td style="width: 8%"><textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
+              <td style="width: 8%">
+                <textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea>
+              </td>
 
               <td style="width: 8%"><a href="#" onclick="{ $(window).off('beforeunload'); $('form').submit();};">übernehmen</a></td>
             </tr>
@@ -166,7 +174,7 @@
                 <input type="hidden" name="rechnung_id[]" value="">
                 <input type="hidden" name="rechnungszeile_id[]" value="">
 
-                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
               </td>
 
               
@@ -230,7 +238,7 @@
                 '<input type="text" style="width: 100%" name="datum[]" class="date" value="' + day + "." + month + "." + year + '">' + 
               '</td>' + 
               '<td style="width: 20%">' + 
-                '<select name="artikelcode[]">' +
+                '<select name="artikelcode[]" id="edit">' +
                     '<option value="0" selected>&nbsp;</option>' +
                     '<option value="1">Visite</option>' +
                     '<option value="2">Labor</option>' +
@@ -397,7 +405,7 @@
           });
 
           $('#edit').focus();
-          $("input[error]").focus();
+          $('[error]').focus();
 
           var element = document.getElementById("scroller");
           element.scrollTop = element.scrollHeight;
