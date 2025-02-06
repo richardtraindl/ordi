@@ -81,21 +81,27 @@
       <div id="scroller" style="max-height: calc(100vh - 39em); overflow-y: scroll; overflow-x: hidden;">
         <table class="records">
           <tbody>
-          {% for rz in rechnungszeilen %}
+          {% macro markerr(error, idx, attribute) %}
+            {% if error and error[0] == idx and error[1] == attribute %}
+              error="error"
+            {% endif %}
+          {% endmacro %}
+
+          {%- for rz in rechnungszeilen -%}
+
             {%- if rz|is_dict -%}
               {% set active = '' %}
-              {% set mark = 'error=error' %}
-            {% else %}
-              {% set active = 'disabled=disabled' %}
-              {% set mark = '' %}
-            {% endif %}
+            {%- else -%}
+              {%- set active = 'disabled=disabled' -%}
+            {%- endif -%}
           
             <tr>
               <td style="width: 10%">
                 <input type="hidden" name="rechnung_id[]" {{ active }} value="{{- rechnung['rechnung_id'] or rechnung.id or '' -}}">
+
                 <input type="hidden" name="rechnungszeile_id[]" {{ active }} value="{{- rz['rechnungszeile_id'] or rz.id -}}">
 
-                <input type="text" style="width: 100%" name="datum[]" class="date change" {{ mark }} {{ active }} value="{{- rz['datum']|fmtdate or rz.datum|fmtdate -}}">
+                <input type="text" style="width: 100%" name="datum[]" class="date change" {{markerr(error, loop.index - 1, "datum")}} {{ active }} value="{{- rz['datum']|fmtdate or rz.datum|fmtdate -}}">
               </td>
 
               {%- if rz|is_dict -%}
@@ -104,25 +110,34 @@
                 {% set artikelcode = rz.artikelcode %}
               {%- endif -%}
 
-              <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
-              
+              {% with idx = loop.index - 1 %}
+                <td style="width: 20%">
+                 {% include 'rechnung/_select_for_artikel.html' %}
+                </td>
+              {% endwith %}              
+
               <td style="width: 54%">
-                <textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change" {{ mark }} {{ active }}>{{- rz['artikel'] or rz.artikel -}}</textarea>
+                <textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change" {{markerr(error, loop.index - 1, "artikel")}} {{ active }}>{{- rz['artikel'] or rz.artikel -}}</textarea>
               </td>
               
               <td style="width: 8%">
-                <textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change" {{ mark }} {{ active }}>{{- rz['betrag']|sn|currency or rz.betrag|sn|currency -}}</textarea>
+                <textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change" {{markerr(error, loop.index - 1, "betrag")}} {{ active }}>{{- rz['betrag']|sn|currency or rz.betrag|sn|currency -}}</textarea>
               </td>
             
               <td style="width: 8%">
-                <p style="margin-bottom: 5px;"><a href="#" onclick="editrow($(this));">ändern</a></p>
+                {%- if rz|is_dict -%}
+                 <p><a href="#" onclick="{ $(window).off('beforeunload'); $('form').submit();};">übernehmen</a></p>
+                {%- else -%}
+                 <p style="margin-bottom: 5px;"><a href="#" onclick="editrow2($(this));">ändern</a></p>
 
-                <p><a href="#" onclick="delrow($(this));">löschen</a></p>
+                 <p><a href="#" onclick="delrow($(this));">löschen</a></p>                 
+                {%- endif -%}
               </td>
             </tr>
-          {% endfor %}
+          {%- endfor -%}
 
-            <tr id="neue_zeile">
+          {%- if not error -%}
+            <tr id="leere_zeile">
               <td style="width: 10%">
                 <input type="hidden" name="rechnung_id[]" value="">
                 <input type="hidden" name="rechnungszeile_id[]" value="">
@@ -130,7 +145,33 @@
                 <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
               </td>
 
-              {% set artikelcode = 0 %}
+              {%- set artikelcode = 0 -%}
+              {%- set active = True -%}
+              {% with idx = None %}
+                <td style="width: 20%">
+                 {% include 'rechnung/_select_for_artikel.html' %}
+                </td>
+              {% endwith %}         
+
+              <td style="width: 54%"><textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
+
+              <td style="width: 8%"><textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
+
+              <td style="width: 8%"><a href="#" onclick="{ $(window).off('beforeunload'); $('form').submit();};">übernehmen</a></td>
+            </tr>
+          {%- endif -%}
+
+            <!--tr id="neue_zeile">
+              <td style="width: 10%">
+                <input type="hidden" name="rechnung_id[]" value="">
+                <input type="hidden" name="rechnungszeile_id[]" value="">
+
+                <input type="text" style="width: 100%" name="datum[]" class="date" id="edit" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
+              </td>
+
+              
+              {% set idx = namespace(value = -1) %}
+              {% set artikelcode = namespace(value = 0) %}
               {% set active = True %}
               <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
 
@@ -138,8 +179,8 @@
 
               <td style="width: 8%"><textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
 
-              <td style="width: 8%"><a href="#" onclick="newrow($(this));">neue Rechnungszeile</a></td>
-            </tr>
+              <td style="width: 8%"><a href="#" onclick="newrow($(this));">speichern</a></td>
+            </tr-->
 
           </tbody>
         </table>
@@ -214,6 +255,64 @@
               '</td>' +
             '</tr>'
         );
+      }
+
+      function editrow2($obj){ 
+        var row = $obj.closest("tr");
+        row.find("textarea").removeAttr("disabled");
+        row.find("input").removeAttr("disabled");
+        row.find("select").removeAttr("disabled");
+        row.find("input[name='touched[]']").val(1);
+        
+        var col = $obj.closest("td");        
+        col.find("p").remove();
+        
+        col.append("<p><a href=\"#\" onclick=\"{ $(window).off('beforeunload'); $('form').submit();};\">übernehmen</a></p>");
+        col.append("<p><a href=\"#\" onclick=\"{ $(window).off('beforeunload'); restorerow($(this));};\">ändern rückgängig</a></p>");
+
+        return false; 
+      }
+
+      function restorerow($obj){ 
+        var row = $obj.closest("tr");
+
+        var rechnungszeile_id = row.find("input[name='rechnungszeile_id[]']").val();
+
+        if(rechnungszeile_id != null){
+          var url = "/rechnung/" + rechnungszeile_id.toString() + "/async_read_rechnungszeile"
+          $.get(url, function(data){
+            $.each(data, function(key, value){
+              if(key == "datum"){
+                row.find("input[name='datum[]']").val(value);
+              }
+              else if(key == "artikelcode"){
+                row.find("select[name='artikelcode[]']").val(value);
+              }
+              else if(key == "artikel"){
+                row.find("textarea[name='artikel[]']").val(value);
+              }
+              else if(key == "betrag"){
+                row.find("textarea[name='betrag[]']").val(value);
+              }
+            });
+          });
+        }
+
+        row.find("textarea").attr("disabled", "disabled");
+        row.find("input").attr("disabled", "disabled");
+        row.find("select").attr("disabled", "disabled");
+        row.find("input[name='touched[]']").val(0);
+
+        var col = $obj.closest("td");
+        col.find("p").remove();
+
+        col.append("<p style=\"margin-bottom: 5px;\"><a href=\"#\" onclick='editrow2($(this));'>ändern</a></p>");
+        col.append("<p><a href=\"#\" onclick='delrow($(this));'>löschen</a></p>");
+
+        $('#als_neue_rechnung').addClass('grayed');
+        $('#print').addClass('grayed');
+
+        return false; 
       }
 
       function editrow($obj){ 

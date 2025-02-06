@@ -47,66 +47,62 @@
       <div id="scroller" style="max-height: calc(100vh - 31.5em); overflow-y: scroll; overflow-x: hidden;">
         <table class="records">
           <tbody>
-          {%- for behandlung in behandlungen -%}
-            {%- if behandlung|is_dict -%}
-              {% set active = '' %}
-              {% set mark = 'error=error' %}
-            {% else %}
-              {% set active = 'disabled=disabled' %}
-              {% set mark = '' %}
-            {% endif %}
+          {%- for bh in behandlungen -%}
+
+            {%- if bh|is_dict -%}
+              {%- set active = '' -%}
+            {%- else -%}
+              {%- set active = 'disabled=disabled' -%}
+            {%- endif -%}
 
             <tr>
               <td style="width: 8%">
-                 <input type="hidden" name="behandlung_id[]" {{ active }} value="{{- behandlung['behandlung_id'] or behandlung.id -}}">
-                <input type="hidden" name="tier_id[]" {{ active }} value="{{- behandlung['tier_id'] or tierhaltung.tier_id -}}">
+                <input type="hidden" name="behandlung_id[]" {{ active }} value="{{- bh['behandlung_id'] or bh.id -}}">
 
-                <input type="text" name="datum[]" class="date" {{ mark }} {{ active }} value="{{- behandlung['datum']|fmtdate or behandlung.datum|fmtdate -}}">
+                <input type="hidden" name="tier_id[]" {{ active }} value="{{- bh['tier_id'] or bh.tier_id -}}">
+
+                {%- if error and error[0] == loop.index - 1 and error[1] == "datum" -%}
+                  <input type="text" name="datum[]" class="date" error="error" {{ active }} value="{{- bh['datum']|fmtdate or bh.datum|fmtdate -}}">
+                {% else %}
+                  <input type="text" name="datum[]" class="date" {{ active }} value="{{- bh['datum']|fmtdate or bh.datum|fmtdate -}}">
+                {% endif %}
               </td>
 
               <td style="width: 30%">
-                <textarea name="diagnose[]" {{ mark }} {{ active }}>
-                  {{- behandlung['diagnose'] or behandlung.diagnose -}}
-                </textarea>
+                <textarea name="diagnose[]" {{ active }}>{{- bh['diagnose'] or bh.diagnose -}}</textarea>
               </td>
 
               <td style="width: 11%">
-                <textarea name="laborwerte1[]" class="labor" {{ mark }} {{ active }}>
-                  {{- behandlung['laborwerte1'] or behandlung.laborwerte1 -}}
-                </textarea>
+                <textarea name="laborwerte1[]" class="labor" {{ active }}>{{- bh['laborwerte1'] or bh.laborwerte1 -}}</textarea>
               </td>
 
               <td style="width: 11%">
-                <textarea name="laborwerte2[]" class="labor" {{ mark }} {{ active }}>
-                  {{- behandlung['laborwerte2'] or behandlung.laborwerte2 -}}
-                </textarea>
+                <textarea name="laborwerte2[]" class="labor" {{ active }}>{{- bh['laborwerte2'] or bh.laborwerte2 -}}</textarea>
               </td>
 
               <td style="width: 14%">
-                <textarea name="arzneien[]" {{ mark }} {{ active }}>{{- behandlung['arzneien'] or behandlung.arzneien -}}</textarea>
+                <textarea name="arzneien[]" {{ active }}>{{- bh['arzneien'] or bh.arzneien -}}</textarea>
               </td>
 
               <td style="width: 7%">
-                <textarea name="arzneimittel[]" {{ mark }} {{ active }}>
-                  {{- behandlung['arzneimittel'] or behandlung.arzneimittel -}}
-                </textarea>
+                <textarea name="arzneimittel[]" {{ active }}>{{- bh['arzneimittel'] or bh.arzneimittel -}}</textarea>
               </td>
 
               <td style="width: 9%">
-                <textarea name="impfungen[]" class="impfungen" readonly {{ mark }} {{ active }}>
-                {%- if behandlung|is_dict -%}
-                  {{- behandlung['impfungen'] -}}
-                {%- else -%}
-                  {%- for impfung in behandlung.impfungen -%}
-                    {%- if loop.index > 1 %},{%- endif -%}
-                    {{- impfung.impfungscode|mapimpfung -}}
+                <textarea name="impfungen[]" class="impfungen" readonly {{ active }}>
+                 {%- if bh|is_dict -%}
+                   {{- bh['impfungen'] -}}
+                 {%- else -%}
+                  {%- for impfung in bh.impfungen -%}
+                   {%- if loop.index > 1 %},{%- endif -%}
+                   {{- impfung.impfungscode|mapimpfung -}}
                   {%- endfor -%}
-                {%- endif -%}
+                 {%- endif -%}
                 </textarea>
               </td>
 
               <td style="width: 5%">
-                <textarea name="gewicht[]" {{ mark }} {{ active }}>{{- behandlung['gewicht'] or behandlung.gewicht -}}</textarea>
+                <textarea name="gewicht[]" {{ active }}>{{- bh['gewicht'] or bh.gewicht -}}</textarea>
               </td>
 
               <td style="width: 6%">

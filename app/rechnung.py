@@ -158,20 +158,22 @@ def save_rechnung(rechnung_id):
         return redirect(url_for('rechnung.index'))
 
     if(request.method == 'POST'):
-        errors = []
+        error = None
         errorrechnungszeilen = []
 
-        rechnung, error = fill_and_validate_rechnung(rechnung, request)
+        rechnung, newerror = fill_and_validate_rechnung(rechnung, request)
         reqrechnungszeilen = build_rechnungszeilen(request)
-        if(error):
-            flash(error)
+        if(newerror):
+            error = [None, newerror[0], newerror[1]]
+            flash(error[2])
             return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=reqrechnungszeilen, artikelwerte=artikelwerte, error=error, page_title="Rechnung")
 
         for reqrechnungszeile in reqrechnungszeilen:
-            rechnungszeile, error = fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile)
-            if(error):
-                errors.append(error)
+            rechnungszeile, newerror = fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile)
+            if(newerror):
                 errorrechnungszeilen.append(reqrechnungszeile)
+                if(not error):
+                    error = [None, newerror[0], newerror[1]]
             else:
                 if(rechnungszeile.id == None):
                     rechnungszeile.rechnung_id=rechnung.id 
@@ -188,30 +190,35 @@ def save_rechnung(rechnung_id):
         # Neu lesen nach Speichern
         rechnungszeilen = db.session.query(Rechnungszeile).filter(Rechnungszeile.rechnung_id==rechnung.id).all()
 
-        if(len(errors) > 0):
-            flash(errors[-1])
+        # Bestehende Datensätze mit fehlerhaften Request Datensätzen ergänzen (austauschen oder aufnehmen)
+        for errorrechnungszeile in errorrechnungszeilen:
+            if(len(errorrechnungszeile['rechnungszeile_id']) > 0):
+                try:
+                    rechnungszeile_id = int(errorrechnungszeile['rechnungszeile_id'])
+                except:
+                    continue
 
-            # Bestehende Datensätze mit fehlerhaften Request Datensätzen ergänzen (austauschen oder aufnehmen)
-            for errorrechnungszeile in errorrechnungszeilen:
-                if(len(errorrechnungszeile['rechnungszeile_id']) > 0):
-                    try:
-                        rechnungszeile_id = int(errorrechnungszeile['rechnungszeile_id'])
-                    except:
-                        print("ojeeeeeeeeeeeeeee")
-                        continue
+                for idx in range(len(rechnungszeilen)):
+                    if(not isinstance(rechnungszeilen[idx], dict)):
+                        if(rechnungszeilen[idx].id == rechnungszeile_id):
+                            rechnungszeilen[idx] = errorrechnungszeile
+                            if(error and error[0] is None):
+                                error = [idx, error[1], error[2]]
+            else:
+                rechnungszeilen.append(errorrechnungszeile)
+                if(error and error[0] is None):
+                    error = [(len(rechnungszeilen) - 1), error[1], error[2]]
 
-                    for idx in range(len(rechnungszeilen)):
-                        if(not isinstance(rechnungszeilen[idx], dict)):
-                            if(rechnungszeilen[idx].id == rechnungszeile_id):
-                                rechnungszeilen[idx] = errorrechnungszeile
-                else:
-                    rechnungszeilen.append(errorrechnungszeile)
+        if(error):
+            flash(error[2])
 
-            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, error=errors[-1], page_title="Rechnung")
+            return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, error=error, page_title="Rechnung")
 
-    error = calc_and_fill_rechnung(rechnung, rechnungszeilen)
-    if(error):
-        flash(error)
+    newerror = calc_and_fill_rechnung(rechnung, rechnungszeilen)
+    if(newerror):
+        error = [None, newerror[0], newerror[1]]
+        flash(error[2])
+
         return render_template('rechnung/rechnung.html', rechnung=rechnung, rechnungszeilen=rechnungszeilen, artikelwerte=artikelwerte, error=error, page_title="Rechnung")
     else:
         db.session.commit()

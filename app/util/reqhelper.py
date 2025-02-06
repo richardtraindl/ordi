@@ -7,7 +7,7 @@ from ..models import *
 
 
 def fill_and_validate_tier(tier, request):
-    error = ""
+    error = None
 
     try:
         geschlechtscode = int(request.form['geschlechtscode'])
@@ -22,7 +22,7 @@ def fill_and_validate_tier(tier, request):
         geburtsdatum = datetime.strptime(str_geburtsdatum, "%d.%m.%Y").date()
     except:
         geburtsdatum = None
-        error = "Falsches Geburtsdatum. "
+        error = ["geburtsdatum","Falsches Geburtsdatum."]
 
     if(request.form.get('patient')):
         patient = True
@@ -43,15 +43,16 @@ def fill_and_validate_tier(tier, request):
     tier.eu_passnummer=request.form['eu_passnummer']
     tier.patient=patient
 
-    if(len(tier.tiername) == 0):
-        error += "Tiername fehlt. "
-    if(len(tier.tierart) == 0):
-        error += "Tierart fehlt. "
+    if(len(tier.tiername) == 0 and not error):
+        error = ["tiername","Tiername fehlt."]
+    if(len(tier.tierart) == 0 and not error):
+        error = ["tierart","Tierart fehlt."]
+
     return tier, error
 
 
 def fill_and_validate_person(person, request):
-    error = ""
+    error = None
 
     try:
         person_id = int(request.form['person_id'])
@@ -82,7 +83,8 @@ def fill_and_validate_person(person, request):
     person.kontakte=request.form['kontakte']
 
     if(len(person.familienname) == 0):
-        error += "Familienname fehlt. "
+        error = ["familienname","Familienname fehlt."]
+
     return person, error
 
 
@@ -128,7 +130,7 @@ def build_behandlungen(request):
 
 
 def fill_and_validate_behandlung(reqbehandlung):
-    error = ""
+    error = None
 
     behandlung = Behandlung()
 
@@ -150,10 +152,10 @@ def fill_and_validate_behandlung(reqbehandlung):
             behandlung.datum = datetime.strptime(str_datum, "%d.%m.%Y")
         except:
             behandlung.datum = None
-            error += "Falsches Behandlungsdatum. "
+            error = ["datum","Falsches Behandlungsdatum."]
     else:
         behandlung.datum = None
-        error += "Falsches Behandlungsdatum. "
+        error = ["datum","Falsches Behandlungsdatum."]
 
     behandlung.gewicht=reqbehandlung['gewicht']
     behandlung.diagnose=reqbehandlung['diagnose']
@@ -166,19 +168,21 @@ def fill_and_validate_behandlung(reqbehandlung):
 
 
 def fill_and_validate_rechnung(rechnung, request):
-    error = ""
+    error = None
 
     try:
         jahr = int(request.form['jahr'])
     except:
         jahr = None
-        error += "Jahr fehlt oder ungültig. "
+        if(not error):
+            error = ["jahr", "Jahr fehlt oder ungültig."]
 
     try:
         lfnr = int(request.form['lfnr'])
     except:
         lfnr = None
-        error += "Laufnummer fehlt oder ungültig. "
+        if(not error):
+            error = ["lfnr", "Laufnummer fehlt oder ungültig."]
 
     if(len(request.form['datum']) > 10):
         str_datum = request.form['datum'].split()[0]
@@ -188,7 +192,8 @@ def fill_and_validate_rechnung(rechnung, request):
         datum = datetime.strptime(str_datum, "%d.%m.%Y")
     except:
         datum = None
-        error += "Falsches Ausstellungsdatum. "
+        if(not error):
+            error = ["datum", "Falsches Ausstellungsdatum."]
 
     if(rechnung == None):
         rechnung = Rechnung()
@@ -238,7 +243,7 @@ def build_rechnungszeilen(request):
 
 
 def fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile):
-    error = ""
+    error = None
 
     rechnungszeile = Rechnungszeile()
 
@@ -261,10 +266,12 @@ def fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile):
             rechnungszeile.datum = datetime.strptime(str_datum, "%d.%m.%Y")
         except:
             rechnungszeile.datum = None
-            error += "Falsches Rechnungszeilendatum. "
+            if(not error):
+                    error = ["datum", "Falsches Rechnungszeilendatum."]
     else:
         rechnungszeile.datum = None
-        error += "Falsches Rechnungszeilendatum. "
+        if(not error):
+            error = ["datum", "Falsches Rechnungszeilendatum."]
 
     try:
         rechnungszeile.artikelcode = int(reqrechnungszeile['artikelcode'])
@@ -272,27 +279,32 @@ def fill_and_validate_rechnungszeile(rechnung, reqrechnungszeile):
             steuersatz = ARTIKEL_STEUER[rechnungszeile.artikelcode]
         except:
             rechnungszeile.artikelcode=None
-            error += "Falsche Artikelart. "
+            if(not error):
+                error = ["artikelcode", "Falsche Artikelart."]
     except:
         rechnungszeile.artikelcode = None
-        error += "Falsche Artikelart. "
+        if(not error):
+            error = ["artikelcode", "Falsche Artikelart."]
 
     if(len(reqrechnungszeile['artikel']) > 0):
         rechnungszeile.artikel=reqrechnungszeile['artikel']
     else:
         rechnungszeile.artikel = None
-        error += "Artikeldetail fehlt. "
+        if(not error):
+            error = ["artikel", "Artikeldetail fehlt."]
 
     if(len(reqrechnungszeile['betrag']) == 0):
         betrag = None
-        error += "Betrag fehlt. "
+        if(not error):
+            error = ["betrag", "Betrag fehlt."]
     else:
         try:
             betrag = float(reqrechnungszeile['betrag'].replace(",", "."))
             rechnungszeile.betrag=round(betrag, 2)
         except:
             rechnungszeile.betrag = None
-            error += "Betrag muss eine Zahl sein. "
+            if(not error):
+                error = ["betrag", "Betrag muss eine Zahl sein."]
 
     return rechnungszeile, error
 

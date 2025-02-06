@@ -22,7 +22,11 @@
         <input size="5" name="titel" value="{{- request.form['titel'] or person.titel|sn -}}">
 
         <label for="familienname">Familienname</label>
-        <input size="20" name="familienname" value="{{- request.form['familienname'] or person.familienname|sn -}}" required>
+        {% if error and error[0] == "familienname" %}
+         <input size="20" error="error" name="familienname" value="{{- request.form['familienname'] or person.familienname|sn -}}" required>
+        {% else %}
+         <input size="20" name="familienname" value="{{- request.form['familienname'] or person.familienname|sn -}}" required>
+        {% endif %}
 
         <label for="vorname">Vorname</label>
         <input size="20" name="vorname" value="{{- request.form['vorname'] or person.vorname|sn -}}">

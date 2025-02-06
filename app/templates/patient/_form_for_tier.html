@@ -7,10 +7,18 @@
         {% endif %}
 
         <label for="tiername">Tiername</label>
-        <input size="20" name="tiername" value="{{- request.form['tiername'] or tier.tiername|sn -}}" required>
+        {% if error and error[0] == "tiername" %}
+         <input size="20" error="error" name="tiername" value="{{- request.form['tiername'] or tier.tiername|sn -}}" required>
+        {% else %}
+         <input size="20" name="tiername" value="{{- request.form['tiername'] or tier.tiername|sn -}}" required>
+        {% endif %}
 
         <label for="tierart">Tierart</label>
-        <input size="20" name="tierart" value="{{- request.form['tierart'] or tier.tierart|sn -}}" required>
+        {% if error and error[0] == "tierart" %}
+         <input size="20" error="error" name="tierart" value="{{- request.form['tierart'] or tier.tierart|sn -}}" required>
+        {% else %}
+         <input size="20" name="tierart" value="{{- request.form['tierart'] or tier.tierart|sn -}}" required>
+        {% endif %}
 
         <label for="rasse">Rasse</label>
         <input size="20" name="rasse" value="{{- request.form['rasse'] or tier.rasse|sn -}}">
@@ -19,7 +27,11 @@
         <input size="20" name="farbe" value="{{- request.form['farbe'] or tier.farbe|sn -}}">
 
         <label for="geburtsdatum">Geburtsdatum</label>
-        <input size="10" class="date" name="geburtsdatum" value="{{- request.form['geburtsdatum'] or tier.geburtsdatum|fmtdate -}}" required>
+        {% if error and error[0] == "geburtsdatum" %}
+         <input size="10" error="error" class="date" name="geburtsdatum" value="{{- request.form['geburtsdatum'] or tier.geburtsdatum|fmtdate -}}" required>
+        {% else %}
+         <input size="10" class="date" name="geburtsdatum" value="{{- request.form['geburtsdatum'] or tier.geburtsdatum|fmtdate -}}" required>
+        {% endif %}
 
         <label for="geschlechtscode">Geschlecht</label>
         {% if tier %}

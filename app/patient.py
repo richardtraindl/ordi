@@ -85,19 +85,16 @@ def create():
 
     if(request.method == 'POST'):
         person, error = fill_and_validate_person(None, request)
-        if(len(error) > 0):
-            flash(error)
+        if(error):
+            flash(error[1])
             tier = Tier()
-            return render_template('patient.create.html', 
-                person=person, tier=tier, anredewerte=anredewerte, 
-                geschlechtswerte=geschlechtswerte, page_title="Neue Karteikarte")
+            return render_template('patient/create.html', person=person, tier=tier, anredewerte=anredewerte, geschlechtswerte=geschlechtswerte, error=error, page_title="Neue Karteikarte")
 
         tier, error = fill_and_validate_tier(None, request)
-        if(len(error) > 0):
-            flash(error)
-            return render_template('patient.create.html', 
-                person=person, tier=tier, anredewerte=anredewerte, 
-                geschlechtswerte=geschlechtswerte, page_title="Neue Karteikarte")
+        if(error):
+            flash(error[1])
+            return render_template('patient/create.html', person=person, tier=tier, anredewerte=anredewerte, 
+                geschlechtswerte=geschlechtswerte, error=error, page_title="Neue Karteikarte")
 
         db.session.add(person)
         db.session.add(tier)
@@ -184,10 +181,10 @@ def create_tier(tierhaltung_id):
 
     if(request.method == 'POST'):
         tier, error = fill_and_validate_tier(None, request)
-        if(len(error) > 0):
-            flash(error)
+        if(error):
+            flash(error[1])
             return render_template('patient/create_tier.html', tier=None, 
-                geschlechtswerte=geschlechtswerte, page_title="Neues Tier")
+                geschlechtswerte=geschlechtswerte, error=error, page_title="Neues Tier")
 
         db.session.add(tier)
         db.session.commit()
@@ -214,10 +211,10 @@ def edit_tier(tierhaltung_id, tier_id):
     if(request.method == 'POST'):
         tier = Tier.query.get(tier_id)
         tier, error = fill_and_validate_tier(tier, request)
-        if(len(error) > 0):
-            flash(error)
+        if(error):
+            flash(error[1])
             return render_template('patient/edit_tier.html', id=id, tier=tier, 
-                geschlechtswerte=geschlechtswerte, page_title="Tier ändern")
+                geschlechtswerte=geschlechtswerte, error=error, page_title="Tier ändern")
         else:
             db.session.commit()
 
@@ -238,10 +235,10 @@ def edit_person(tierhaltung_id, person_id):
     if(request.method == 'POST'):
         person = Person.query.get(person_id)
         person, error = fill_and_validate_person(person, request)
-        if(len(error) > 0):
-            flash(error)
+        if(error):
+            flash(error[1])
             return render_template('patient/edit_person.html', tierhaltung_id=tierhaltung_id, person=person, 
-                anredewerte=anredewerte, page_title="Person ändern")
+                anredewerte=anredewerte, error=error, page_title="Person ändern")
         else:
             db.session.commit()
 
@@ -314,22 +311,23 @@ def save_behandlungen(tierhaltung_id):
         datum=datetime.today()
 
         errorbehandlungen = []
-        errors = []
+        error = None
 
         reqbehandlungen = build_behandlungen(request)
-        for reqbehandlung in reqbehandlungen:
-            behandlung, str_impfungen, error = fill_and_validate_behandlung(reqbehandlung)
-            if(error):
-                errors.append(error)
+        for idx, reqbehandlung in enumerate(reqbehandlungen):
+            behandlung, str_impfungen, newerror = fill_and_validate_behandlung(reqbehandlung)
+            if(newerror):
                 errorbehandlungen.append(reqbehandlung)
+                if(not error):
+                    error = [None, newerror[0], newerror[1]]
             else:
                 if(behandlung.id == None):
                     behandlung.tier_id = tierhaltung.tier_id
                     db.session.add(behandlung)
                     db.session.commit()
 
-                    if(len(str_impfungen) > 0):
-                        impfungstexte = str_impfungen.split(',')
+                    if(len(str_impfungen.strip()) > 0):
+                        impfungstexte = str_impfungen.strip().split(',')
                     else:
                         impfungstexte = []
                     save_or_delete_impfungen(behandlung, impfungstexte)
@@ -344,8 +342,8 @@ def save_behandlungen(tierhaltung_id):
                     dbbehandlung.arzneimittel=behandlung.arzneimittel
                     db.session.commit()
 
-                    if(len(str_impfungen) > 0):
-                        impfungstexte = str_impfungen.split(',')
+                    if(len(str_impfungen.strip()) > 0):
+                        impfungstexte = str_impfungen.strip().split(',')
                     else:
                         impfungstexte = []
                     save_or_delete_impfungen(dbbehandlung, impfungstexte)
@@ -367,15 +365,19 @@ def save_behandlungen(tierhaltung_id):
                     if(not isinstance(behandlungen[idx], dict)):
                         if(behandlungen[idx].id == behandlung_id):
                             behandlungen[idx] = errorbehandlung
+                            if(error and error[0] is None):
+                                error = [idx, error[1], error[2]]
             else:
                 behandlungen.append(errorbehandlung)
+                if(error and error[0] is None):
+                    error = [(len(behandlungen) - 1), error[1], error[2]]
 
-        if(len(errors) > 0):
-            flash(errors[-1])
+        if(error):
+            flash(error[2])
 
             return render_template('patient/tierhaltung.html', tierhaltung=tierhaltung, behandlungen=behandlungen, 
                       datum=datum.strftime("%d.%m.%Y"), anredewerte=anredewerte, geschlechtswerte=geschlechtswerte,
-                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, page_title="Karteikarte", error=errors[-1])
+                      laborreferenzen=laborreferenzen, impfungswerte=impfungswerte, error=error, page_title="Karteikarte")
 
     return redirect(url_for('patient.show', tierhaltung_id=tierhaltung_id))
 

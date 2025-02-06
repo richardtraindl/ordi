@@ -9,13 +9,14 @@
 
 {% block content %}
     <form method="post">
-
       {% include 'patient/_form_for_tier.html' %}
 
       <div class="small-gap"></div>
 
       <div class="flex-container">
-        <input type="submit" value="Speichern" style="margin-right: 20px;">
+        <p><input type="submit" value="Speichern"></p>
+
+        <p><a class="btn" href="{{ url_for('patient.show', tierhaltung_id=tierhaltung_id) }}">Zurück</a></p>
       </div>
     </form>
 
