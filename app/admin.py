@@ -77,7 +77,7 @@ def import_rechnung(path):
 @bp.cli.command("import-rechnungszeile")
 @click.argument("path")
 def import_rechnungszeile(path):
-    filename = 'tblRechnungszeile.txt'
+    filename = 'tblRechnungzeile.txt'
     import_rechnungszeile(path + "/" + filename)
 
 
@@ -88,14 +88,8 @@ def import_termin(path):
     import_termin(path + "/" + filename)
 
 
-def clean_str_file(str_file, dchar, dcnt):
-    if(dchar == ';'):
-        rchar = ','
-    else:
-        rchar = ';'
-
+def clean_str_file(str_file):
     new = ""
-    cnt = 0
     quotecnt = 0
 
     for char in str_file:
@@ -103,23 +97,11 @@ def clean_str_file(str_file, dchar, dcnt):
             quotecnt += 1
             new += char
             continue
-        elif(char == dchar):
-            if(quotecnt % 2 == 0):
-                new += char
-                cnt += 1
-            else:
-                new += rchar
+
+        if((char == '\n' or char == '\r') and quotecnt % 2 == 1):
             continue
-        elif(char == '\n'):
-            if(quotecnt % 2 == 1 or cnt % dcnt != 0):
-                new += '§'
-            else:
-                new += char
-            continue
-        elif(char == '\r'):
-            continue
-        else:
-            new += char
+
+        new += char
     return new
 
 
@@ -131,16 +113,15 @@ def import_tier(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 11)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
     
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 12):
-            print(arrline[0], end="", flush=True)
+            print("arrline: " + arrline[0], end="", flush=True)
             continue
 
         try:
@@ -152,7 +133,7 @@ def import_tier(filename):
                 tier.tiername = arrline[1].strip('"')
             else:
                 tier.tiername = "__unbekannt__"
-
+            
             tier.tierart = arrline[2].strip('"')
 
             tier.rasse = arrline[3].strip('"')
@@ -164,7 +145,8 @@ def import_tier(filename):
             tier.merkmal = arrline[6].strip('"')
 
             if(len(arrline[7]) > 0):
-                tier.geburtsdatum = datetime.strptime((arrline[7])[:10], "%Y-%m-%d")
+                str_date = arrline[7].split(' ')[0]
+                tier.geburtsdatum = datetime.strptime(str_date, "%d.%m.%Y")
             else:
                 tier.geburtsdatum = date(year=1900, month=1, day=1)
 
@@ -176,6 +158,7 @@ def import_tier(filename):
             tier.chip_nummer = arrline[9].strip('"')
 
             tier.eu_passnummer = arrline[10].strip('"')
+
 
             if(arrline[11].strip('\n') == "1"):
                 tier.patient = True
@@ -214,13 +197,12 @@ def import_person(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 6)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 7):
             print(arrline[0], end="", flush=True)
@@ -228,9 +210,6 @@ def import_person(filename):
 
         try:
             p_id = int(arrline[0])
-
-            if(p_id < 5000): # hack to limit record count
-                continue
 
             person = Person()
 
@@ -289,15 +268,14 @@ def import_adresse(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 4)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     personen = db.session.query(Person).all()
 
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 5):
             print(arrline[0], end="", flush=True)
@@ -310,7 +288,7 @@ def import_adresse(filename):
                 if(person.id == p_id):
                     person.adr_strasse = arrline[2].strip('"')
                     person.adr_plz = arrline[3].strip('"')
-                    person.adr_ort = arrline[4].strip('"\n')
+                    person.adr_ort = arrline[4].strip('"')
                     break
         except:
             ok = False
@@ -341,20 +319,18 @@ def import_kontakt(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 4)
-    print(new)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     personen = db.session.query(Person).all()
 
     for index, line in enumerate(lines):
-        newline = line.replace('§', '\n')
-        arrline = newline.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 5):
             print(line, end="*\n", flush=True)
-            print("index: " + str(index) + "line: " + line + "newline: " + newline, end=" error1\n", flush=True)
+            print("index: " + str(index) + " line : " + line, end=" error1\n", flush=True)
             continue
 
         if(len(arrline[3]) == 0):
@@ -366,9 +342,9 @@ def import_kontakt(filename):
             for person in personen:
                 if(person.id == p_id):
                     if(person.kontakte and len(person.kontakte) > 0):
-                        person.kontakte += " " + arrline[3].strip('"\n')
+                        person.kontakte += " " + arrline[3].strip('"')
                     else:
-                        person.kontakte = arrline[3].strip('"\n')
+                        person.kontakte = arrline[3].strip('"')
                     break
         except:
             ok = False
@@ -399,7 +375,7 @@ def import_tierhaltung(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 2)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
@@ -408,7 +384,7 @@ def import_tierhaltung(filename):
     tiere = db.session.query(Tier).all()
 
     for line in lines:
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 3):
             print(arrline[0], end="", flush=True)
@@ -437,7 +413,8 @@ def import_tierhaltung(filename):
 
             tierhaltung.tier_id = tier_id
 
-            tierhaltung.created_at = datetime.strptime((arrline[2])[:10], "%Y-%m-%d")
+            str_date = arrline[2].split(' ')[0]
+            tierhaltung.created_at = datetime.strptime(str_date, "%d.%m.%Y")
 
             db.session.add(tierhaltung)
         except:
@@ -471,15 +448,14 @@ def import_behandlung(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 9)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     tierhaltungen = db.session.query(Tierhaltung).all()
 
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 10):
             print(arrline[0], end="", flush=True)
@@ -504,7 +480,8 @@ def import_behandlung(filename):
             behandlung.tier_id = tier_id
 
             if(len(arrline[2]) > 0):
-                behandlung.datum = datetime.strptime((arrline[2])[:10], "%Y-%m-%d")
+                str_date = arrline[2].split(' ')[0]
+                behandlung.datum = datetime.strptime(str_date, "%d.%m.%Y")
             else:
                 behandlung.datum = date(year=1900, month=1, day=1)
 
@@ -552,14 +529,14 @@ def import_impfung(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 1)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     behandlungen = db.session.query(Behandlung).all()
 
     for line in lines:
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 2):
             print(arrline[0], end="", flush=True)
@@ -615,16 +592,14 @@ def import_behandlungsverlauf(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 5)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     tierhaltungen = db.session.query(Tierhaltung).all()
 
     for line in lines:
-        line = line.replace('§', '\n')
-
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 6):
             print(arrline[0], end="", flush=True)
@@ -654,13 +629,14 @@ def import_behandlungsverlauf(filename):
             behandlungsverlauf.tier_id = tier_id
 
             if(len(arrline[3]) > 0 and len(arrline[3]) >= 10):
-                behandlungsverlauf.datum = datetime.strptime((arrline[3])[:10], "%Y-%m-%d")
+                str_date = arrline[3].split(' ')[0]
+                behandlungsverlauf.datum = datetime.strptime(str_date, "%d.%m.%Y")
             else:
                 behandlungsverlauf.datum = date(year=1900, month=1, day=1)
 
             behandlungsverlauf.diagnose = arrline[4].strip('"')
 
-            behandlungsverlauf.behandlung = arrline[5].strip('"\n')
+            behandlungsverlauf.behandlung = arrline[5].strip('"')
 
             db.session.add(behandlungsverlauf)
         except:
@@ -694,15 +670,14 @@ def import_rechnung(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 13)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     tierhaltungen = db.session.query(Tierhaltung).all()
 
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 14):
             print(arrline[0], end="", flush=True)
@@ -742,7 +717,8 @@ def import_rechnung(filename):
                 rechnung.lfnr = 0
 
             if(len(arrline[5]) > 0):
-                rechnung.datum = datetime.strptime((arrline[5])[:10], "%Y-%m-%d")
+                str_date = arrline[5].split(' ')[0]
+                rechnung.datum = datetime.strptime(str_date, "%d.%m.%Y")
             else:
                 rechnung.datum = date(year=1900, month=1, day=1)
 
@@ -794,15 +770,14 @@ def import_rechnungszeile(filename):
 
     ok = True
 
-    new = clean_str_file(str_file, ';', 5)
+    new = clean_str_file(str_file)
 
     lines = new.split('\n')
 
     rechnungen = db.session.query(Rechnung).all()
 
     for line in lines:
-        line = line.replace('§', '\n')
-        arrline = line.split(";")
+        arrline = line.split("$")
 
         if(len(arrline) != 6):
             print(arrline[0], end="", flush=True)
@@ -829,7 +804,8 @@ def import_rechnungszeile(filename):
             rechnungszeile.artikelcode = int(arrline[2])
 
             if(len(arrline[3]) > 0):
-                rechnungszeile.datum = datetime.strptime((arrline[3])[:10], "%Y-%m-%d")
+                str_date = arrline[3].split(' ')[0]
+                rechnungszeile.datum = datetime.strptime(str_date, "%d.%m.%Y")
             else:
                 rechnungszeile.datum = date(year=1900, month=1, day=1)
 
@@ -859,67 +835,3 @@ def import_rechnungszeile(filename):
         db.session.rollback()
         print("rechnungszeile import ende")
         return False
-
-
-def import_termin(filename):
-    print("starte termin import")
-
-    with open(filename, "r") as fo:
-        str_file = fo.read()
-
-    ok = True
-
-    new = clean_str_file(str_file, ',', 4)
-
-    lines = new.split('\n')
-
-    for line in lines:
-        line = line.replace('§', '\n')
-
-        arrline = line.split(",")
-
-        if(len(arrline) != 5):
-            print(arrline[0], end="", flush=True)
-            continue
-
-        try:
-            termin = Termin()
-
-            t_id = int(arrline[0].strip('"'))
-
-            if(t_id < 29000): # hack to limit record count
-                continue
-
-            #termin.id = t_id
-
-            #termin.tierhaltung_id = None
-
-            termin.autor = arrline[1].strip(' "')
-
-            termin.beginn = datetime.strptime((arrline[2].strip(' "')), "%Y-%m-%d %H:%M:%S")
-
-            termin.ende = datetime.strptime((arrline[3]).strip(' "'), "%Y-%m-%d %H:%M:%S")
-
-            termin.thema = arrline[4].strip(' "\n')
-
-            db.session.add(termin)
-        except:
-            ok = False
-            print("error", end=" ", flush=True)
-            print(arrline, flush=True)
-            break
-    
-    if(ok):
-        try:
-            db.session.commit()
-            print("termin import ende")
-            return True
-        except Exception as err:
-            print(err)
-            print("termin import ende")
-            return False
-    else:
-        db.session.rollback()
-        print("termin import ende")
-        return False
-

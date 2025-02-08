@@ -148,7 +148,6 @@
               </td>
 
               {%- set artikelcode = 0 -%}
-              <!-- {% set active = True %} -->
               {%- set active = '' -%}
               {%- set edit = 'id=edit' -%}
               {% with idx = None %}
@@ -168,27 +167,6 @@
               <td style="width: 8%"><a href="#" onclick="{ $(window).off('beforeunload'); $('form').submit();};">übernehmen</a></td>
             </tr>
           {%- endif -%}
-
-            <!--tr id="neue_zeile">
-              <td style="width: 10%">
-                <input type="hidden" name="rechnung_id[]" value="">
-                <input type="hidden" name="rechnungszeile_id[]" value="">
-
-                <input type="text" style="width: 100%" name="datum[]" class="date" value="{{- rechnung['datum']|fmtdate or rechnung.datum|fmtdate or datum -}}">
-              </td>
-
-              
-              {% set idx = namespace(value = -1) %}
-              {% set artikelcode = namespace(value = 0) %}
-              {% set active = True %}
-              <td style="width: 20%">{% include 'rechnung/_select_for_artikel.html' %}</td>
-
-              <td style="width: 54%"><textarea maxlength="256" style="width: 100%; height: 42px;" name="artikel[]" class="change"></textarea></td>
-
-              <td style="width: 8%"><textarea maxlength="9" style="width: 100%; height: 42px;" name="betrag[]" class="change"></textarea></td>
-
-              <td style="width: 8%"><a href="#" onclick="newrow($(this));">speichern</a></td>
-            </tr-->
 
           </tbody>
         </table>
