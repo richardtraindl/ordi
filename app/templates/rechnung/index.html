@@ -42,17 +42,27 @@
     </tr>
   </table>
 
-  <div class="liste-wrapper">
+  <div class="liste-wrapper" style="max-height: calc(100vh - 8em);">
     <table class="liste">
     {%- for rechnung in rechnungen -%}
       <tr>
-        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.jahr -}}</a></td>
+        <td width="6%">
+          <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
+            {{- rechnung.Rechnung.jahr -}}
+          </a>
+          </td>
 
-        <td width="6%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">{{- rechnung.Rechnung.lfnr -}}</a></td>
+        <td width="6%">
+          <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
+            {{- rechnung.Rechnung.lfnr -}}
+          </a>
+        </td>
 
-        <td width="10%"><a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
-        {{- rechnung.Rechnung.brutto_summe|currency -}}
-        </a></td>
+        <td width="10%">
+          <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">
+            {{- rechnung.Rechnung.brutto_summe|currency -}}
+          </a>
+        </td>
 
         <td width="36%">
           <a target="_blank" href="{{ url_for('rechnung.show', rechnung_id=rechnung.Rechnung.id) }}">

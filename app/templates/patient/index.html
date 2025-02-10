@@ -43,6 +43,10 @@
       <div>
         <input type="submit" value="suchen">
       </div>
+      
+      <div class="action">
+        <p style="padding-left: 8em"><a class="btn" target="_blank" href="{{ url_for('patient.create') }}">neue Karteikarte</a></p>
+      </div>
     </div>
   </form>
 
@@ -60,7 +64,7 @@
     </tr>
   </table>
 
-  <div class="liste-wrapper">
+  <div class="liste-wrapper" style="max-height: calc(100vh - 12em);">
     <table class="liste">
     {%- for th in tierhaltungen -%}
       <tr>
@@ -81,11 +85,11 @@
         </td>
 
         <td width="10%">
-          <a target="_blank" href="{{ url_for('rechnung.create', tierhaltung_id=th.Tierhaltung.id) }}">neue Rechnung</a><br>
+          <p style="padding: 0.2em 0 0.1em 0"><a target="_blank" href="{{ url_for('rechnung.create', tierhaltung_id=th.Tierhaltung.id) }}">neue Rechnung</a></p>
 
-          <a target="_blank" href="{{ url_for('behandlungsverlauf.create', tierhaltung_id=th.Tierhaltung.id) }}">neuer Beh.Verlauf</a><br>
+          <p style="padding: 0.1em 0 0.1em 0"><a target="_blank" href="{{ url_for('behandlungsverlauf.create', tierhaltung_id=th.Tierhaltung.id) }}">neuer Beh.Verlauf</a></p>
 
-          <a target="_blank" href="{{ url_for('patient.create_tier', tierhaltung_id=th.Tierhaltung.id) }}">neues Tier</a>
+          <p style="padding: 0.1em 0 0.2em 0"><a target="_blank" href="{{ url_for('patient.create_tier', tierhaltung_id=th.Tierhaltung.id) }}">neues Tier</a></p>
         </td>
 
         <td width="6%">
@@ -94,10 +98,6 @@
       </tr>
     {%- endfor -%}
     </table>
-  </div>
-
-  <div class="action">
-    <p><a class="btn" target="_blank" href="{{ url_for('patient.create') }}">neue Karteikarte</a></p>
   </div>
 
   <script>
