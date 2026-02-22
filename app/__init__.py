@@ -11,8 +11,9 @@ app = Flask(__name__)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/richard/dev/flask/ordi/instance/ordi.sqlite3'
-app.config['SECRET_KEY'] = 'esgibt nichtmehrvielzusagen'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/richard/dev/flask/ordi/instance/ordi.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ordi.sqlite3'
+app.config['SECRET_KEY'] = 'schau nicht so genau!'
 app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=1440) # 24h
 
 db = SQLAlchemy(app)
