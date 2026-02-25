@@ -23,9 +23,12 @@ def calc_kaldatum(datum):
     add = aktdatum.weekday() * -1
     return aktdatum + timedelta(days=add)
 
-def adjust_datum(datum):
-    minute = (datum.minute // 15)  * 15
-    return datetime(year=datum.year, month=datum.month, day=datum.day, hour=datum.hour, minute=minute, second=0, microsecond=0)
+def adjust_datum(datum, mode=None):
+    if(mode):
+        return datetime(year=datum.year, month=datum.month, day=datum.day, hour=0, minute=0, second=0, microsecond=0)
+    else:
+        minute = (datum.minute // 15)  * 15 # setze Minuten auf ganze Viertelstunden
+        return datetime(year=datum.year, month=datum.month, day=datum.day, hour=datum.hour, minute=minute, second=0, microsecond=0)
 
 def read_termine(kaldatum):
     kaldatum_ende = kaldatum + timedelta(days=7)
@@ -59,7 +62,7 @@ def index(kaldatum=None):
                 kaldatum = calc_kaldatum(datum)
             except:
                 flash("error")
-                return render_template(template, aktdatum=aktdatum, 
+                return render_template(template, aktdatum=adjust_datum(aktdatum, 1), 
                                         kaldatum=kaldatum, jahre=jahre, monate=monate, 
                                         wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
@@ -68,7 +71,7 @@ def index(kaldatum=None):
                 adjust = int(request.form['kwadjust'])
             except:
                 flash("error")
-                return render_template("kalender/index.html", aktdatum=aktdatum, 
+                return render_template("kalender/index.html", aktdatum=adjust_datum(aktdatum, 1), 
                                         kaldatum=kaldatum, jahre=jahre, monate=monate, 
                                         wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
@@ -76,7 +79,7 @@ def index(kaldatum=None):
 
     termine = read_termine(kaldatum)
 
-    return render_template("kalender/index.html", termine=termine, aktdatum=aktdatum, kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
+    return render_template("kalender/index.html", termine=termine, aktdatum=adjust_datum(aktdatum, 1), kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -116,7 +119,7 @@ def create(beginn=None):
         else:
             dtbeginn = adjust_datum(datetime.now())
                 
-        ende = dtbeginn + timedelta(hours=1)
+        ende = dtbeginn + timedelta(hours=0.5)
 
         thema = ""
 

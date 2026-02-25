@@ -95,7 +95,7 @@
           {% set mindatum = stddatum|add_mins(min) %}
           <div class="div-row">
             <div class="div-cell inner">
-            {% if std >= 14 and std <= 19 %}
+            {% if std >= 14 and std <= 19 and min == 30 %}
               <a class="{{- klasse -}}" href="{{ url_for('kalender.create', beginn=mindatum.strftime('%Y-%m-%d %H:%M:00')) }}">
                 {{- mindatum.strftime("%H:%M") -}}
               </a>

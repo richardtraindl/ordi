@@ -5,11 +5,16 @@
     border: 0px;
     font-size: 14px; 
     line-height: 14px;
-}*/
+*/
+
+*{ box-sizing: border-box; }
+
+#terminform{
+}
 
 table { border: 1px solid #111111; border-spacing: 0px; }
 tr { vertical-align: top }
-td { border: 1px solid #111111; padding: 1px 1px 1px 1px; vertical-align: top; }
+td { width: 60px; border: 1px solid #111111; padding: 1px 1px 1px 1px; vertical-align: top; }
 
 #calender{ width: 100%; }
 #calender * { font-size: 14px; line-height: 14px; }

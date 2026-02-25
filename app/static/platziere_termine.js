@@ -1,7 +1,7 @@
 
   function platziere_termine(wdth, tpwdth){
     var dwtagvor = -1;
-    var schedule = [(24*4)]; // [(24*2)]
+    var schedule = [(24*4)];
 
     $('div.termin').each( function(){
         var dautor = $(this).attr( "data-autor");
@@ -10,9 +10,9 @@
         var dviertel = $(this).attr( "data-viertel");
         var ddauer_viertel = $(this).attr( "data-dauer_viertel");
 
-        var vwidth = wdth; // 100;
+        var vwidth = wdth;
         var vheight = 10;
-        var vtop = 15;
+        var vtop = 0;
         var border = 0;
         var borderheight = 0;
         var vstageleft = 1;
@@ -28,7 +28,7 @@
 
         if( dautor == "TP"){
             var bg = "#EDA9D5";
-            vwidth = tpwdth; // 50  30
+            vwidth = tpwdth;
         }
 
         // 1) clear schedule wenn neuer tag: alle viertel stunden auf null setzen
@@ -80,15 +80,15 @@
           leadingstd = "";
         }
         var caltdid = '#c' + leadingtag + dwtag + "_" + leadingstd + dstunde;
-        // console.log( "caltdid=" + caltdid );
         var caltd = $( caltdid );
-        var px_pro_viertelstunde = 16 // caltd.height() / 4 + 0; // + 2
+        var px_pro_viertelstunde = 16; // !!!
         dwtagvor = dwtag;
         dstundevor = dstunde;
         ddauervor = ddauer_viertel;
+
         // position (top und left) setzen
         if(index < 5){
-            vstageleft = index;
+            vstageleft = index + 2;
         }
         if(index > 4 && index < 10){
             vtop = 19;
@@ -100,10 +100,11 @@
         }
         // height setzen
         if( dautor == "TP"){
-            vheight = 40; // 20
+            vheight = 40;
         }
         else{
-            vheight = (px_pro_viertelstunde * Number(ddauer_viertel));
+          var adjust = (2 / Number(ddauer_viertel));
+          vheight = ((px_pro_viertelstunde * Number(ddauer_viertel)) + adjust);
         }
 
         border = Number(dviertel) / 4;
@@ -115,9 +116,9 @@
             'border' : '1px solid black',
             'position' : 'absolute',
             'width' : vwidth + 'px',
-            'height' : vheight - 20 + 'px', // + borderheight
-            'top' : (caltd.offset().top + 68 / 4 * Number(dviertel) + vtop) + 'px', // + border
-            'left' : (caltd.offset().left + 20 * vstageleft) + 'px', // + 36 + 
+            'height' : vheight + 'px',
+            'top' : (caltd.offset().top + ((60 / 4) * Number(dviertel)) + vtop) + 'px',
+            'left' : (caltd.offset().left + 20 * vstageleft) + 'px',
             'overflow' : 'hidden'
         }
 
