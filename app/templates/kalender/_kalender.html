@@ -9,12 +9,12 @@
         <label for="kmonat">Monat:</label>
         {% include 'kalender/_select_for_monate.html' %}
 
-        <input type="hidden" name="ktag" value="{{- kaldatum.day -}}">
+        <input type="hidden" name="ktag" value="{{- kwbeginn.day -}}">
         <input type="hidden" id="kwadjust" name="kwadjust" value="0">
       </div>
 
       <div>
-        <label>KW:&nbsp; {{- kaldatum|calc_kw -}}</label>
+        <label>KW:&nbsp; {{- kwbeginn|calc_kw -}}</label>
 
         <input id="kwadd" class="btn" size="5" name="kwadd" value="+">
 
@@ -35,17 +35,17 @@
 
   <table id="calender">
     <colgroup>
-        <col width="14%">
-        <col width="14%">
-        <col width="14%">
-        <col width="14%">
-        <col width="14%">
-        <col width="14%">
-        <col width="14%">
+      <col width="14%">
+      <col width="14%">
+      <col width="14%">
+      <col width="14%">
+      <col width="14%">
+      <col width="14%">
+      <col width="14%">
     </colgroup>
     <tr>
       {% for tag in range(7) %}
-        {% set tagesdatum = kaldatum|add_days(tag) %}
+        {% set tagesdatum = kwbeginn|add_days(tag) %}
         {% if tagesdatum == aktdatum %}
           <td class="header2">
         {% else %}
@@ -65,7 +65,7 @@
     </tr>
 
   {% for std in range(7, 24) %}
-    {% set stddatum = kaldatum|add_hours(std) %}
+    {% set stddatum = kwbeginn|add_hours(std) %}
     {% if std == 22 %}
       <tr style="height:60px">
     {% else %}
@@ -113,7 +113,7 @@
   <!-- Für jeden Termin und Wochentag einen DIV Block schreiben -->
   {% for tag in range(7) %}
     {% for termin in termine %}
-      {% set ugrenze = kaldatum|add_days(tag) %}
+      {% set ugrenze = kwbeginn|add_days(tag) %}
       {% set mgrenze = ugrenze|add_hours(7) %}
       {% set ogrenze = ugrenze|add_hours(24) %}
 
@@ -174,11 +174,11 @@
         {% endif %}
             <a class="termin" href="{{- url_for('kalender.edit', id=termin.id) -}}">
             {% if termin.autor == "TP" %}
-              {{- termin.beginn.strftime("%d.%m.") + "-" + termin.ende.strftime("%d.%m.") -}}
+              {{- termin.beginn.strftime("%d.%m.") + "-" + termin.ende.strftime("%d.%m.") -}}&nbsp;
               <br>
               {{- termin.thema -}}
             {% else %}
-              {{- termin.beginn.strftime("%H:%M") + "-" + termin.ende.strftime("%H:%M") -}}
+              {{- termin.beginn.strftime("%H:%M") + "-" + termin.ende.strftime("%H:%M") -}}&nbsp;
               <br>
               {{- termin.thema -}}
             {% endif %}

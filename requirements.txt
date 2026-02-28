@@ -1,8 +1,7 @@
-"flask<3"
-"werkzeug<3"
+flask
 flask_login
 flask_sqlalchemy
 flask_migrate
 flask_weasyprint
 openpyxl
-python-dotenv-1.0.1
+python-dotenv

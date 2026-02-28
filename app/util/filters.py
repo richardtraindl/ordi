@@ -2,7 +2,7 @@
 
 from datetime import datetime, date, timedelta
 from ..values import ANREDE, GESCHLECHT, IMPFUNG, ARTIKEL
-from .helper import reverse_lookup, gibFeiertag
+from .helper import reverse_lookup, gib_feiertag as helper_gib_feiertag
 
 
 def mapanrede(anredecode):
@@ -101,4 +101,4 @@ def add_mins(dt, mins):
 
 
 def gib_feiertag(now):
-    return gibFeiertag(now)
+    return helper_gib_feiertag(now)

@@ -1,9 +1,7 @@
 
 import functools
 
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 #from werkzeug.urls import url_parse
 from urllib.parse import urlparse
 from flask_login import current_user, login_user, logout_user

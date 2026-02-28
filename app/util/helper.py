@@ -28,7 +28,7 @@ def filter_bad_chars(value):
     return None
 
 
-def berechneOstern(jahr):
+def berechne_ostern(jahr):
     # Die Methode
     # Teile das Jahr, dessen Osterdatum berechnet werden soll, durch 19. 
     # Der Quotient interessiert uns nicht, aber der Divisionsrest kommt zur 
@@ -89,7 +89,7 @@ def berechneOstern(jahr):
     return date(jahr, m, n)
 
 
-def gibFeiertag(tagesdatum):
+def gib_feiertag(tagesdatum):
     datum = date(tagesdatum.year, tagesdatum.month, tagesdatum.day)
     if(datum.month == 1 and datum.day == 1):
         return "Neujahr"
@@ -108,7 +108,7 @@ def gibFeiertag(tagesdatum):
     elif(datum.month == 12 and datum.day == 26):
         return "Stefanitag"
     
-    ostern = berechneOstern(datum.year)
+    ostern = berechne_ostern(datum.year)
     if(ostern == datum):
         return "Ostern"
     elif(ostern + timedelta(days=1) == datum):

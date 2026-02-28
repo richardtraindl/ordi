@@ -13,43 +13,47 @@ bp = Blueprint('kalender', __name__, url_prefix='/kalender')
 
 
 AUTOREN = ["Ordi", "Elfi", "TP"]
-jahre = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033]
+jahre = [2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035]
 monate = [["Jänner", 1], ["Februar", 2], ["März", 3], ["April", 4], ["Mai", 5], ["Juni", 6], ["Juli", 7], ["August", 8], ["September", 9], ["Oktober", 10], ["November", 11], ["Dezember", 12]]
 wochentage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
 wtage = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 
-def calc_kaldatum(datum):
-    aktdatum = datetime(year=datum.year, month=datum.month, day=datum.day)
-    add = aktdatum.weekday() * -1
-    return aktdatum + timedelta(days=add)
+
+# Ermittle von datum den Beginn der Kalenderwoche (Montag)
+def gib_kwbeginn(datum):
+    newdatum = datetime(year=datum.year, month=datum.month, day=datum.day, hour=0, minute=0, second=0, microsecond=0)
+    add = newdatum.weekday() * -1
+    return newdatum + timedelta(days=add)
 
 def adjust_datum(datum, mode=None):
-    if(mode):
+    if(mode == 'ymd'):
+        # Tagesdatum ohne Stunden, etc.
         return datetime(year=datum.year, month=datum.month, day=datum.day, hour=0, minute=0, second=0, microsecond=0)
     else:
-        minute = (datum.minute // 15)  * 15 # setze Minuten auf ganze Viertelstunden
+        # Default ohne Angabe von mode: Runde minute auf ganze Viertelstunden
+        minute = (datum.minute // 15)  * 15
         return datetime(year=datum.year, month=datum.month, day=datum.day, hour=datum.hour, minute=minute, second=0, microsecond=0)
 
-def read_termine(kaldatum):
-    kaldatum_ende = kaldatum + timedelta(days=7)
+def lese_termine(kwbeginn):
+    kwende = kwbeginn + timedelta(days=7)
 
     return db.session.query(Termin) \
-            .filter(or_(and_(Termin.beginn < kaldatum, Termin.ende > kaldatum), and_(Termin.beginn >= kaldatum, Termin.beginn < kaldatum_ende))) \
+            .filter(or_(and_(Termin.beginn < kwbeginn, Termin.ende > kwbeginn), and_(Termin.beginn >= kwbeginn, Termin.beginn < kwende))) \
             .order_by(Termin.beginn.asc()).all()
 
 
 @bp.route('/', methods=('GET', 'POST'))
 @bp.route('/index', methods=('GET', 'POST'))
-@bp.route('/<kaldatum>/index', methods=('GET', 'POST'))
+@bp.route('/<kwbeginn>/index', methods=('GET', 'POST'))
 @login_required
-def index(kaldatum=None):
+def index(kwbeginn=None):
     aktdatum = adjust_datum(datetime.now())
 
-    if(kaldatum):
-        datum = datetime.strptime(kaldatum, "%Y-%m-%d %H:%M:00") 
-        kaldatum = calc_kaldatum(datum)
+    if(kwbeginn):
+        datum = datetime.strptime(kwbeginn, "%Y-%m-%d %H:%M:00") 
+        kwbeginn = gib_kwbeginn(datum)
     else:
-        kaldatum = calc_kaldatum(aktdatum)
+        kwbeginn = gib_kwbeginn(aktdatum)
 
     if(request.method == 'POST'):
         if(len(request.form['kjahr']) > 0 and len(request.form['kmonat']) > 0 and
@@ -59,11 +63,11 @@ def index(kaldatum=None):
                 kmonat = int(request.form['kmonat'])
                 ktag = int(request.form['ktag'])
                 datum = datetime(year=kjahr, month=kmonat, day=ktag)
-                kaldatum = calc_kaldatum(datum)
+                kwbeginn = gib_kwbeginn(datum)
             except:
                 flash("error")
-                return render_template(template, aktdatum=adjust_datum(aktdatum, 1), 
-                                        kaldatum=kaldatum, jahre=jahre, monate=monate, 
+                return render_template(template, aktdatum=adjust_datum(aktdatum, 'ymd'), 
+                                        kwbeginn=kwbeginn, jahre=jahre, monate=monate, 
                                         wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
         if(len(request.form['kwadjust']) > 0):
@@ -71,20 +75,20 @@ def index(kaldatum=None):
                 adjust = int(request.form['kwadjust'])
             except:
                 flash("error")
-                return render_template("kalender/index.html", aktdatum=adjust_datum(aktdatum, 1), 
-                                        kaldatum=kaldatum, jahre=jahre, monate=monate, 
+                return render_template("kalender/index.html", aktdatum=adjust_datum(aktdatum, 'ymd'), 
+                                        kwbeginn=kwbeginn, jahre=jahre, monate=monate, 
                                         wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
-            kaldatum += timedelta(weeks=adjust)
+            kwbeginn += timedelta(weeks=adjust)
 
-    termine = read_termine(kaldatum)
+    termine = lese_termine(kwbeginn)
 
-    return render_template("kalender/index.html", termine=termine, aktdatum=adjust_datum(aktdatum, 1), kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
+    return render_template("kalender/index.html", termine=termine, aktdatum=adjust_datum(aktdatum, 'ymd'), kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
 
 @bp.route('/create', methods=('GET', 'POST'))
 @bp.route('/<beginn>/create', methods=('GET', 'POST'))
-#@login_required
+@login_required
 def create(beginn=None):
     aktdatum = adjust_datum(datetime.now())
 
@@ -101,10 +105,10 @@ def create(beginn=None):
 
         if(beginn >= ende):
             flash("Ende liegt vor oder auf Beginn.")
-            kaldatum = calc_kaldatum(beginn)
-            termine = read_termine(kaldatum)
+            kwbeginn = gib_kwbeginn(beginn)
+            termine = lese_termine(kwbeginn)
             return render_template('kalender/termin.html', termin=None, 
-                                   autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kaldatum=kaldatum, 
+                                   autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, 
                                    jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
 
         thema = request.form['thema']
@@ -112,7 +116,7 @@ def create(beginn=None):
         db.session.add(termin)
         db.session.commit()
 
-        return redirect(url_for('kalender.index', kaldatum=termin.beginn))
+        return redirect(url_for('kalender.index', kwbeginn=gib_kwbeginn(termin.beginn), page_title="Kalender"))
     else:
         if(beginn):
             dtbeginn = datetime.strptime(beginn, "%Y-%m-%d %H:%M:00")
@@ -125,16 +129,16 @@ def create(beginn=None):
 
         termin = Termin(autor="Gerold", beginn=dtbeginn, ende=ende, thema=thema)
 
-        kaldatum = calc_kaldatum(dtbeginn)
-        termine = read_termine(kaldatum)
+        kwbeginn = gib_kwbeginn(dtbeginn)
+        termine = lese_termine(kwbeginn)
 
         return render_template('kalender/termin.html', termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage, 
+                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, 
                                page_title="Termin")
 
 
 @bp.route('/<int:id>/edit', methods=('GET','POST'))
-#@login_required
+@login_required
 def edit(id):
     aktdatum = adjust_datum(datetime.now())
 
@@ -153,31 +157,35 @@ def edit(id):
 
         if(termin.beginn >= termin.ende):
             flash("Ende liegt vor oder auf Beginn.")
-            kaldatum = calc_kaldatum(termin.beginn)
-            termine = read_termine(kaldatum)
+            kwbeginn = gib_kwbeginn(termin.beginn)
+            termine = lese_termine(kwbeginn)
             return render_template('kalender/termin.html', termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage, 
+                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, 
                                page_title="Termin")
 
         termin.thema = request.form['thema']
 
         db.session.commit()
 
-        return redirect(url_for('kalender.index', kaldatum=termin.beginn))
+        return redirect(url_for('kalender.index', kwbeginn=gib_kwbeginn(termin.beginn)))
     else:
-        kaldatum = calc_kaldatum(termin.beginn)
-        termine = read_termine(kaldatum)
+        kwbeginn = gib_kwbeginn(termin.beginn)
+        termine = lese_termine(kwbeginn)
         return render_template("kalender/termin.html", termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kaldatum=kaldatum, jahre=jahre, monate=monate, wochentage=wochentage,
+                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage,
                                page_title="Termin")
 
 
 @bp.route('/<int:id>/delete', methods=('GET',))
-#@login_required
+@login_required
 def delete(id):
-    termin = db.session.query(Termin).get(id)
-    db.session.delete(termin)
-    db.session.commit()
-
-    return redirect(url_for('kalender.index'))
+    try:
+        termin = db.session.query(Termin).get(id)
+        kwbeginn = gib_kwbeginn(termin.beginn)
+        db.session.delete(termin)
+        db.session.commit()
+        return redirect(url_for('kalender.index', kwbeginn=kwbeginn, page_title="Kalender"))
+    except:
+        flash("error")
+        return render_template("kalender/index.html", page_title="Kalender")
 

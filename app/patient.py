@@ -10,7 +10,7 @@ from app import app, db
 from app.models import *
 from .values import *
 from .util.reqhelper import *
-from .util.helper import *
+#from .util.helper import *
 
 
 bp = Blueprint('patient', __name__, url_prefix='/patient')

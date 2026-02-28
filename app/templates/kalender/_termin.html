@@ -1,8 +1,8 @@
 
   {% if termin and termin.id %}
-    <form method="post" action="{{ url_for('kalender.edit', id=termin.id) }}">
+    <form id="terminform" method="post" action="{{ url_for('kalender.edit', id=termin.id) }}">
   {% else %}
-     <form method="post" action="{{ url_for('kalender.create') }}">
+     <form id="terminform" method="post" action="{{ url_for('kalender.create') }}">
   {% endif %}
 
       <div class="div-table" style="width: 80%">
@@ -73,9 +73,9 @@
         <p><input type="submit" id="sichern" class="btn" style="font-size: 16px; line-height: 18px;" value="sichern" onclick="return checkdate();"></p>
 
         {% if termin %}
-           <p><a class="btn" href="{{ url_for('kalender.index', kaldatum=termin.beginn.strftime('%Y-%m-%d %H:%M:00')) }}">abbrechen</a></p>
+           <p><a class="btn" href="{{ url_for('kalender.index', kwbeginn=termin.beginn.strftime('%Y-%m-%d %H:%M:00')) }}">abbrechen</a></p>
         {% else %}
-           <p><a class="btn" href="{{ url_for('kalender.index', kaldatum=kaldatum) }}">abbrechen</a></p>
+           <p><a class="btn" href="{{ url_for('kalender.index', kwbeginn=kwbeginn) }}">abbrechen</a></p>
         {% endif %}
 
         {% if termin.id %}

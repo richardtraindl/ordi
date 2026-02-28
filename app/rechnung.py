@@ -11,7 +11,7 @@ from app import app, db
 from app.models import *
 from .values import *
 from .util.reqhelper import *
-from .util.helper import *
+#from .util.helper import *
 
 
 bp = Blueprint('rechnung', __name__, url_prefix='/rechnung')

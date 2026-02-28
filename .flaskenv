@@ -1,1 +1,1 @@
-FLASK_APP=patient.py
+FLASK_APP=ordi
