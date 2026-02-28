@@ -15,4 +15,4 @@ migrations/
 *.pdf
 *.xlsx
 
-ordi.sh
+*.sh
