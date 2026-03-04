@@ -42,6 +42,79 @@ def lese_termine(kwbeginn):
             .order_by(Termin.beginn.asc()).all()
 
 
+class ktermin:
+    def __init__(self, termin, tag, stunde, viertel, dauer_viertel):
+        self.termin = termin
+        self.tag = tag
+        self.stunde = stunde 
+        self.viertel = viertel 
+        self.dauer_viertel = dauer_viertel
+
+
+def gib_ktermine(termine, kwbeginn):
+    ktermine=[]
+
+    for i in range(0, 7):
+
+        dt = kwbeginn + timedelta(days=i)
+        tag = int(dt.day)
+
+        for termin in termine:
+
+            if(termin.autor == 'TP'):
+                if(termin.beginn.day == dt.day): # and termin.ende.day > dt.day
+                    stunde = 21
+                    viertel = 0
+                    dauer_viertel = 1
+                elif(termin.beginn.day < dt.day and termin.ende.day > dt.day):
+                    stunde = 22
+                    viertel = 0
+                    dauer_viertel = 1
+                elif(termin.ende.day == dt.day):
+                    stunde = 23
+                    viertel = 0
+                    dauer_viertel = 1
+                else:
+                    continue
+                    
+                ktermine.append(ktermin(termin, tag, stunde, viertel, dauer_viertel))
+
+            else:
+                if(termin.beginn.hour < 7):
+                    stunde = 7
+                    viertel = 0
+                else:
+                    stunde = int(termin.beginn.hour)
+                    viertel = int(termin.beginn.minute) // 15
+                
+                if(termin.beginn.day == dt.day):
+                    if(termin.ende.day == dt.day):
+                        # Ein Tagestermin
+                        dauer_viertel = ((termin.ende.hour - stunde) * 4) + (termin.ende.minute // 15)
+                    else:
+                        # Beginn Mehrere-Tage Termin
+                        dauer_viertel = ((24 - stunde) * 4) - viertel
+
+                elif(termin.beginn.day < dt.day and termin.ende.day > dt.day):
+                    # Zwischen Beginn und Ende Mehrere-Tage Termin
+                    stunde = 7
+                    viertel = 0
+                    dauer_viertel = (17 * 4) # den vollen Kalender belegen
+                    
+                elif(termin.beginn.day < dt.day and termin.ende.day == dt.day):
+                    # Ende Mehrere-Tage Termin
+                    stunde = 7
+                    viertel = 0
+                    dauer_viertel = ((termin.ende.hour - stunde) * 4) + (termin.ende.minute // 15)
+
+                else:
+                    continue
+
+                ktermine.append(ktermin(termin, tag, stunde, viertel, dauer_viertel))
+
+    return ktermine
+
+
 @bp.route('/', methods=('GET', 'POST'))
 @bp.route('/index', methods=('GET', 'POST'))
 @bp.route('/<kwbeginn>/index', methods=('GET', 'POST'))
@@ -82,8 +155,9 @@ def index(kwbeginn=None):
             kwbeginn += timedelta(weeks=adjust)
 
     termine = lese_termine(kwbeginn)
+    ktermine = gib_ktermine(termine, kwbeginn)
 
-    return render_template("kalender/index.html", termine=termine, aktdatum=adjust_datum(aktdatum, 'ymd'), kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
+    return render_template("kalender/index.html", ktermine=ktermine, aktdatum=adjust_datum(aktdatum, 'ymd'), kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, wtage=wtage, page_title="Kalender")
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -106,10 +180,8 @@ def create(beginn=None):
         if(beginn >= ende):
             flash("Ende liegt vor oder auf Beginn.")
             kwbeginn = gib_kwbeginn(beginn)
-            termine = lese_termine(kwbeginn)
-            return render_template('kalender/termin.html', termin=None, 
-                                   autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, 
-                                   jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
+            return render_template('kalender/termin.html', termin=None, autoren=AUTOREN, aktdatum=aktdatum, 
+                                    kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
 
         thema = request.form['thema']
         termin = Termin(autor=autor, beginn=beginn, ende=ende, thema=thema)
@@ -124,17 +196,11 @@ def create(beginn=None):
             dtbeginn = adjust_datum(datetime.now())
                 
         ende = dtbeginn + timedelta(hours=0.5)
-
         thema = ""
-
         termin = Termin(autor="Gerold", beginn=dtbeginn, ende=ende, thema=thema)
-
         kwbeginn = gib_kwbeginn(dtbeginn)
-        termine = lese_termine(kwbeginn)
-
-        return render_template('kalender/termin.html', termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, 
-                               page_title="Termin")
+        return render_template('kalender/termin.html', termin=termin, autoren=AUTOREN, aktdatum=aktdatum, 
+                                kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
 
 
 @bp.route('/<int:id>/edit', methods=('GET','POST'))
@@ -158,10 +224,8 @@ def edit(id):
         if(termin.beginn >= termin.ende):
             flash("Ende liegt vor oder auf Beginn.")
             kwbeginn = gib_kwbeginn(termin.beginn)
-            termine = lese_termine(kwbeginn)
-            return render_template('kalender/termin.html', termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, 
-                               page_title="Termin")
+            return render_template('kalender/termin.html', termin=termin, autoren=AUTOREN, 
+                                    aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
 
         termin.thema = request.form['thema']
 
@@ -170,10 +234,8 @@ def edit(id):
         return redirect(url_for('kalender.index', kwbeginn=gib_kwbeginn(termin.beginn)))
     else:
         kwbeginn = gib_kwbeginn(termin.beginn)
-        termine = lese_termine(kwbeginn)
-        return render_template("kalender/termin.html", termin=termin, 
-                               autoren=AUTOREN, termine=termine, aktdatum=aktdatum, kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage,
-                               page_title="Termin")
+        return render_template("kalender/termin.html", termin=termin, autoren=AUTOREN, aktdatum=aktdatum, 
+                                kwbeginn=kwbeginn, jahre=jahre, monate=monate, wochentage=wochentage, page_title="Termin")
 
 
 @bp.route('/<int:id>/delete', methods=('GET',))

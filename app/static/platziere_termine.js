@@ -20,21 +20,24 @@
         // farbe für autoren setzen
         if( dautor == "Elfi"){
             var bg = "#BBE4F3";
+            var zindex = 0;
         }
 
         if( dautor == "Ordi" || dautor == "Gerold" ){
             var bg = "#FBFBB1";
+            var zindex = 0;
         }
 
         if( dautor == "TP"){
             var bg = "#EDA9D5";
             vwidth = tpwdth;
+            var zindex = 1;
         }
 
         // 1) clear schedule wenn neuer tag: alle viertel stunden auf null setzen
         if( dwtag != dwtagvor){
             for( var i = (7 * 4); i < (24 * 4); i++ ){
-                schedule[i] = [15];
+                schedule[i] = [17];
                 schedule[i][0] = 0;
                 schedule[i][1] = 0;
                 schedule[i][2] = 0;
@@ -53,11 +56,11 @@
             }
         }
 
-        // 2) strutur befuellen (pro viertel stunden)
+        // 2) struktur befuellen (pro viertel stunden)
         var startzeit = Number(dstunde) * 4 + Number(dviertel);
         var endzeit = startzeit + Number(ddauer_viertel);
         var index = 0;
-        for( var j = 0; j < 15; j++ ){
+        for( var j = 0; j < 17; j++ ){
             if(schedule[startzeit][j] == 0){
                 index = j;
                 break;
@@ -81,7 +84,7 @@
         }
         var caltdid = '#c' + leadingtag + dwtag + "_" + leadingstd + dstunde;
         var caltd = $( caltdid );
-        var px_pro_viertelstunde = 16; // !!!
+        var px_pro_viertelstunde = 16;
         dwtagvor = dwtag;
         dstundevor = dstunde;
         ddauervor = ddauer_viertel;
@@ -115,6 +118,7 @@
             'background' : bg,
             'border' : '1px solid black',
             'position' : 'absolute',
+            'z-index' : zindex,
             'width' : vwidth + 'px',
             'height' : vheight + 'px',
             'top' : (caltd.offset().top + ((60 / 4) * Number(dviertel)) + vtop) + 'px',

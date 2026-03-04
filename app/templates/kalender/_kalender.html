@@ -74,11 +74,7 @@
 
     {% for tag in range(7) %}
       {% set stddatum = stddatum|add_days(tag) %}
-      {% if (tag == 1 or tag == 2 or tag == 3) and std == 18 %}
-        {% set klasse = "stunde2" %}
-      {% else %}
-        {% set klasse = "stunde1" %}
-      {% endif %}
+      {% set klasse = "stunde1" %}
 
       <td id={{- stddatum.strftime("c%d_%H") -}}>
         <div class="div-table">
@@ -111,81 +107,15 @@
   </table>
 
   <!-- Für jeden Termin und Wochentag einen DIV Block schreiben -->
-  {% for tag in range(7) %}
-    {% for termin in termine %}
-      {% set ugrenze = kwbeginn|add_days(tag) %}
-      {% set mgrenze = ugrenze|add_hours(7) %}
-      {% set ogrenze = ugrenze|add_hours(24) %}
-
-      {% if termin.beginn.date() <= ugrenze.date() and termin.ende >= ugrenze %}
-        <!-- Für Autor "TP" Termine zwischen 21:00 und 23:00 zu setzen -->
-        {% if termin.autor == "TP" %}
-          {% set mytag = ugrenze.day|int %}
-          {% set myviertel = 0 %}
-          {% set mydauer_viertel = 1 %}
-
-          {% if termin.beginn.date() == ugrenze.date() %} 
-            {% set stunde = 21 %}
-          {% else %}
-            {% if termin.ende.date() == ugrenze.date() %}
-              {% set stunde = 23 %}
-            {% else %}
-              {% set stunde = 22 %}
-            {% endif %}
-          {% endif %}
-        <!-- Für andere Autoren Termine setzen -->
-        {% else %}
-          {% if termin.beginn < mgrenze %}
-            {% set beginn = mgrenze %}
-          {% else %}
-            {% set beginn = termin.beginn %}
-          {% endif %}
-
-          {% set mytag = beginn.day|int %}
-          {% set stunde = beginn.hour|int %}
-          {% set myviertel = (beginn.minute|int / 15)|int %}
-
-          {% if termin.ende < ogrenze %}
-            {% set mydauer_viertel = ((termin.ende - beginn).seconds / (15 * 60))|int %}
-          {% else %}
-            {% if beginn < ogrenze %}
-              {% set mydauer_viertel = 4 %}
-            {% else %}
-              {% set mydauer_viertel = ((ogrenze - beginn).seconds / (15 * 60))|int %}
-            {% endif %}
-          {% endif %}
-
-          {% if mydauer_viertel < 1 %}
-            {% set mydauer_viertel = 1 %}
-          {% endif %}
-        {% endif %}
-
-        {% if termin.beginn.date() < termin.ende.date() and termin.beginn.date() != ugrenze.date() and termin.autor != "TP" %}
-          <div class="termin" data-autor="{{- termin.autor -}}" data-wtag="{{- mytag -}}" 
-            data-stunde="7" data-viertel="0" data-dauer_viertel="3">
-            <a class="termin" href="{{- url_for('kalender.edit', id=termin.id) -}}">
-              {{- termin.beginn.strftime("%d.%m %H:%M") -}}
-              <br>
-              {{- termin.ende.strftime("%d.%m %H:%M") -}}
-            </a>
-        {% else %}
-          <div class="termin" data-autor="{{- termin.autor -}}" data-wtag="{{- mytag -}}" 
-            data-stunde="{{- stunde -}}" data-viertel="{{- myviertel -}}" data-dauer_viertel="{{- mydauer_viertel -}}">
-        {% endif %}
-            <a class="termin" href="{{- url_for('kalender.edit', id=termin.id) -}}">
-            {% if termin.autor == "TP" %}
-              {{- termin.beginn.strftime("%d.%m.") + "-" + termin.ende.strftime("%d.%m.") -}}&nbsp;
-              <br>
-              {{- termin.thema -}}
-            {% else %}
-              {{- termin.beginn.strftime("%H:%M") + "-" + termin.ende.strftime("%H:%M") -}}&nbsp;
-              <br>
-              {{- termin.thema -}}
-            {% endif %}
-            </a>
-          </div>
-      {% endif %}
-    {% endfor %}
+  {% for ktermin in ktermine %}
+    <div class="termin" data-autor="{{- ktermin.termin.autor -}}" data-wtag="{{- ktermin.tag -}}" 
+      data-stunde="{{- ktermin.stunde -}}" data-viertel="{{- ktermin.viertel -}}" data-dauer_viertel="{{- ktermin.dauer_viertel -}}">
+      <a class="termin" href="{{- url_for('kalender.edit', id=ktermin.termin.id) -}}">
+        {{- ktermin.termin.thema -}}&nbsp;
+        <br>
+        {{- ktermin.termin.beginn.strftime("%H:%M") + "-" + ktermin.termin.ende.strftime("%H:%M") -}}
+      </a>
+    </div>
   {% endfor %}
 
   <div id="pop-up">
