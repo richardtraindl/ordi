@@ -90,7 +90,7 @@ def gib_ktermine(termine, kwbeginn):
                 if(termin.beginn.day == dt.day):
                     if(termin.ende.day == dt.day):
                         # Ein Tagestermin
-                        dauer_viertel = ((termin.ende.hour - stunde) * 4) + (termin.ende.minute // 15)
+                        dauer_viertel = ((termin.ende.hour - stunde) * 4) + ((termin.ende.minute // 15) - viertel)
                     else:
                         # Beginn Mehrere-Tage Termin
                         dauer_viertel = ((24 - stunde) * 4) - viertel
