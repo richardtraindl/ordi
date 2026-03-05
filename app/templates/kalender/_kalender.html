@@ -106,15 +106,21 @@
   {% endfor %}
   </table>
 
-  <!-- Für jeden Termin und Wochentag einen DIV Block schreiben -->
+  <!-- Für jeden Wochentag und Termin einen DIV Block schreiben -->
   {% for ktermin in ktermine %}
     <div class="termin" data-autor="{{- ktermin.termin.autor -}}" data-wtag="{{- ktermin.tag -}}" 
       data-stunde="{{- ktermin.stunde -}}" data-viertel="{{- ktermin.viertel -}}" data-dauer_viertel="{{- ktermin.dauer_viertel -}}">
-      <a class="termin" href="{{- url_for('kalender.edit', id=ktermin.termin.id) -}}">
-        {{- ktermin.termin.thema -}}&nbsp;
-        <br>
-        {{- ktermin.termin.beginn.strftime("%H:%M") + "-" + ktermin.termin.ende.strftime("%H:%M") -}}
-      </a>
+      {% if ktermin.termin.beginn.day == ktermin.termin.ende.day %}
+        <a class="termin" href="{{- url_for('kalender.edit', id=ktermin.termin.id) -}}">
+          {{- ktermin.termin.thema -}} &nbsp;
+          {{- ktermin.termin.beginn.strftime("%H:%M") + " bis " + ktermin.termin.ende.strftime("%H:%M") -}}
+        </a>
+      {% else %}
+        <a class="termin" href="{{- url_for('kalender.edit', id=ktermin.termin.id) -}}">
+          {{- ktermin.termin.thema -}} &nbsp;
+          {{- ktermin.termin.beginn.strftime("%Y-%m-%d, %H:%M") + " bis " + ktermin.termin.ende.strftime("%Y-%m-%d, %H:%M") -}}
+        </a>
+      {% endif %}
     </div>
   {% endfor %}
 
